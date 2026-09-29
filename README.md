@@ -2,7 +2,7 @@
 Proyecto 2 de Estructuras de Datos 
 
 
-# Bitácora de Inteligencia Artificial
+## Bitácora de Inteligencia Artificial
 
 > En cumplimiento con las condiciones de entrega, documentamos honestamente el
 > uso de IA. Toda salida fue revisada, adaptada y comprendida por el equipo.
