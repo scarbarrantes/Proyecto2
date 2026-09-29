@@ -7,7 +7,7 @@ Proyecto 2 de Estructuras de Datos
 > En cumplimiento con las condiciones de entrega, documentamos honestamente el
 > uso de IA. Toda salida fue revisada, adaptada y comprendida por el equipo.
 
-## Herramientas utilizadas
+### Herramientas utilizadas
 - **DeepSeek** — generación de fragmentos, explicación de algoritmos, depuración.
 - **ChatGPT** — apoyo en documentación y revisión de lógica.
 
