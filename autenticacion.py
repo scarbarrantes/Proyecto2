@@ -78,3 +78,25 @@ class HashTable:
                     return False
         registrar_auditoria(f"Fallo de inicio de sesión (Usuario no encontrado): {username}")
         return False
+
+    def buscar_usuario(self, username):
+        """Devuelve el Usuario que coincide con username, o None si no existe.
+
+        Reutiliza la función hash propia para calcular el índice y recorre
+        únicamente el bucket correspondiente (no revisa el resto de la tabla).
+
+        Es compatible con los dos formatos que puede contener un bucket:
+          - listas [username, password]  -> formato actual de insertar()
+          - objetos Usuario              -> formato de la migración futura
+        En el primer caso construye un Usuario; en el segundo devuelve la
+        misma instancia almacenada.
+
+        Complejidad temporal: O(1 + n/m) promedio (n usuarios, m capacidad).
+        """
+        indice = self._funcion_hash(username)
+        for par in self.tabla[indice]:
+            if par[0] == username:
+                if isinstance(par, Usuario):
+                    return par
+                return Usuario(par[0], par[1])
+        return None
