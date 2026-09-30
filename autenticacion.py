@@ -1,6 +1,46 @@
 # autenticacion.py
 from auditoria import registrar_auditoria
 
+class Usuario:
+    """Modelo de un usuario del sistema de autenticación.
+
+    Reemplaza el uso de listas sueltas [username, password] por un objeto
+    con atributos con nombre propio. La clase HashTable todavía almacena
+    listas, por lo que __getitem__ y __setitem__ actúan como puente de
+    compatibilidad (usuario[0] es el username y usuario[1] la password).
+    """
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+    def __repr__(self):
+        # No se expone la contraseña en texto plano al imprimir el objeto
+        return f"Usuario(username={self.username!r}, password='********')"
+
+    def __eq__(self, otro):
+        """Dos usuarios son iguales si coinciden username y password."""
+        if not isinstance(otro, Usuario):
+            return NotImplemented
+        return self.username == otro.username and self.password == otro.password
+
+    def __getitem__(self, indice):
+        """Acceso tipo lista: usuario[0] -> username, usuario[1] -> password."""
+        if indice == 0:
+            return self.username
+        if indice == 1:
+            return self.password
+        raise IndexError("Usuario solo define el índice 0 (username) y 1 (password)")
+
+    def __setitem__(self, indice, valor):
+        """Asignación tipo lista: usuario[1] = 'nueva' actualiza la password."""
+        if indice == 0:
+            self.username = valor
+        elif indice == 1:
+            self.password = valor
+        else:
+            raise IndexError("Usuario solo define el índice 0 (username) y 1 (password)")
+
 class HashTable:
     def __init__(self, capacidad=10):
         self.capacidad = capacidad
