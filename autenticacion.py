@@ -100,3 +100,44 @@ class HashTable:
                     return par
                 return Usuario(par[0], par[1])
         return None
+
+    def mostrar_tabla(self, mostrar_passwords=False):
+        """Imprime el contenido completo de la tabla: cada índice y su bucket.
+
+        Compatible con los dos formatos que puede contener un bucket:
+          - listas [username, password]  -> formato actual de insertar()
+          - objetos Usuario              -> formato de la migración futura
+        Las contraseñas se muestran enmascaradas salvo que se pase
+        mostrar_passwords=True (misma política que Usuario.__repr__).
+
+        Complejidad temporal: O(m + n)  (m = capacidad, n = elementos),
+        porque un recorrido de "mostrar todo" no puede ser más barato que
+        visitar los m índices y las n entradas almacenadas.
+        """
+        factor_carga = (self.elementos / self.capacidad) if self.capacidad else 0
+        print(f"Tabla Hash | capacidad={self.capacidad} | usuarios={self.elementos} "
+              f"| factor de carga={factor_carga:.2f}")
+        if not self.tabla:
+            print("  (tabla vacía: capacidad 0)")
+            return
+        for indice in range(self.capacidad):
+            cadena = self.tabla[indice]
+            if not cadena:
+                print(f"  [{indice}] vacío")
+                continue
+            aviso = "  <-- colisión (encadenamiento)" if len(cadena) > 1 else ""
+            print(f"  [{indice}] {len(cadena)} usuario(s){aviso}")
+            for posicion, entrada in enumerate(cadena, start=1):
+                print(f"        #{posicion} {self._formatear_entrada(entrada, mostrar_passwords)}")
+
+    def _formatear_entrada(self, entrada, mostrar_passwords=False):
+        """Devuelve una cadena legible para una entrada almacenada en un bucket.
+
+        Funciona con listas/tuplas [username, password] y con objetos Usuario,
+        porque ambos responden a los índices 0 y 1 (puente __getitem__).
+        """
+        username = entrada[0]
+        password = entrada[1]
+        if not mostrar_passwords:
+            password = "*" * len(str(password))
+        return f"username='{username}' password='{password}'"
