@@ -1,6 +1,46 @@
 # autenticacion.py
 from auditoria import registrar_auditoria
 
+class Usuario:
+    """Modelo de un usuario del sistema de autenticación.
+
+    Reemplaza el uso de listas sueltas [username, password] por un objeto
+    con atributos con nombre propio. La clase HashTable todavía almacena
+    listas, por lo que __getitem__ y __setitem__ actúan como puente de
+    compatibilidad (usuario[0] es el username y usuario[1] la password).
+    """
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+    def __repr__(self):
+        # No se expone la contraseña en texto plano al imprimir el objeto
+        return f"Usuario(username={self.username!r}, password='********')"
+
+    def __eq__(self, otro):
+        """Dos usuarios son iguales si coinciden username y password."""
+        if not isinstance(otro, Usuario):
+            return NotImplemented
+        return self.username == otro.username and self.password == otro.password
+
+    def __getitem__(self, indice):
+        """Acceso tipo lista: usuario[0] -> username, usuario[1] -> password."""
+        if indice == 0:
+            return self.username
+        if indice == 1:
+            return self.password
+        raise IndexError("Usuario solo define el índice 0 (username) y 1 (password)")
+
+    def __setitem__(self, indice, valor):
+        """Asignación tipo lista: usuario[1] = 'nueva' actualiza la password."""
+        if indice == 0:
+            self.username = valor
+        elif indice == 1:
+            self.password = valor
+        else:
+            raise IndexError("Usuario solo define el índice 0 (username) y 1 (password)")
+
 class HashTable:
     def __init__(self, capacidad=10):
         self.capacidad = capacidad
@@ -39,3 +79,65 @@ class HashTable:
         registrar_auditoria(f"Fallo de inicio de sesión (Usuario no encontrado): {username}")
         return False
 
+    def buscar_usuario(self, username):
+        """Devuelve el Usuario que coincide con username, o None si no existe.
+
+        Reutiliza la función hash propia para calcular el índice y recorre
+        únicamente el bucket correspondiente (no revisa el resto de la tabla).
+
+        Es compatible con los dos formatos que puede contener un bucket:
+          - listas [username, password]  -> formato actual de insertar()
+          - objetos Usuario              -> formato de la migración futura
+        En el primer caso construye un Usuario; en el segundo devuelve la
+        misma instancia almacenada.
+
+        Complejidad temporal: O(1 + n/m) promedio (n usuarios, m capacidad).
+        """
+        indice = self._funcion_hash(username)
+        for par in self.tabla[indice]:
+            if par[0] == username:
+                if isinstance(par, Usuario):
+                    return par
+                return Usuario(par[0], par[1])
+        return None
+
+    def mostrar_tabla(self, mostrar_passwords=False):
+        """Imprime el contenido completo de la tabla: cada índice y su bucket.
+
+        Compatible con los dos formatos que puede contener un bucket:
+          - listas [username, password]  -> formato actual de insertar()
+          - objetos Usuario              -> formato de la migración futura
+        Las contraseñas se muestran enmascaradas salvo que se pase
+        mostrar_passwords=True (misma política que Usuario.__repr__).
+
+        Complejidad temporal: O(m + n)  (m = capacidad, n = elementos),
+        porque un recorrido de "mostrar todo" no puede ser más barato que
+        visitar los m índices y las n entradas almacenadas.
+        """
+        factor_carga = (self.elementos / self.capacidad) if self.capacidad else 0
+        print(f"Tabla Hash | capacidad={self.capacidad} | usuarios={self.elementos} "
+              f"| factor de carga={factor_carga:.2f}")
+        if not self.tabla:
+            print("  (tabla vacía: capacidad 0)")
+            return
+        for indice in range(self.capacidad):
+            cadena = self.tabla[indice]
+            if not cadena:
+                print(f"  [{indice}] vacío")
+                continue
+            aviso = "  <-- colisión (encadenamiento)" if len(cadena) > 1 else ""
+            print(f"  [{indice}] {len(cadena)} usuario(s){aviso}")
+            for posicion, entrada in enumerate(cadena, start=1):
+                print(f"        #{posicion} {self._formatear_entrada(entrada, mostrar_passwords)}")
+
+    def _formatear_entrada(self, entrada, mostrar_passwords=False):
+        """Devuelve una cadena legible para una entrada almacenada en un bucket.
+
+        Funciona con listas/tuplas [username, password] y con objetos Usuario,
+        porque ambos responden a los índices 0 y 1 (puente __getitem__).
+        """
+        username = entrada[0]
+        password = entrada[1]
+        if not mostrar_passwords:
+            password = "*" * len(str(password))
+        return f"username='{username}' password='{password}'"
