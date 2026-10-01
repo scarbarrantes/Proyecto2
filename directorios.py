@@ -86,3 +86,21 @@ class ArbolDirectorios:
         self.raiz.mostrar(nivel=0)  # Llama al método recursivo del NodoArchivo
         print("---------------------------------")
         registrar_auditoria("Visualización jerárquica del árbol de directorios solicitada.")
+        
+    def buscar_elemento(self, nombre):
+        """
+        Busca un elemento en todo el árbol de forma recursiva.
+        Cumple con: búsqueda recursiva de archivos y carpetas (Round 2).
+        """
+        print(f"\nIniciando búsqueda de: '{nombre}'...")
+        resultado = self.raiz.buscar(nombre)  # Llama al método recursivo del NodoArchivo
+        
+        if resultado:
+            tipo = "Carpeta" if resultado.es_carpeta else "Archivo"
+            print(f"✅ Elemento '{nombre}' encontrado. Tipo: {tipo}")
+            registrar_auditoria(f"Búsqueda exitosa en directorios: {nombre} ({tipo})")
+            return resultado
+        else:
+            print(f"❌ Elemento '{nombre}' no existe en el sistema.")
+            registrar_auditoria(f"Búsqueda fallida en directorios: {nombre} no encontrado")
+            return None    
