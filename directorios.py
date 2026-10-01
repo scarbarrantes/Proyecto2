@@ -75,3 +75,14 @@ class ArbolDirectorios:
         nuevo_nodo = NodoArchivo(nombre, es_carpeta)
         padre.agregar_hijo(nuevo_nodo)
         return nuevo_nodo
+    
+    
+    def mostrar_arbol(self):
+        """
+        Muestra todo el árbol de directorios desde la raíz.
+        Cumple con: visualización indentada del árbol (Round 2).
+        """
+        print("\n--- ESTRUCTURA DE DIRECTORIOS ---")
+        self.raiz.mostrar(nivel=0)  # Llama al método recursivo del NodoArchivo
+        print("---------------------------------")
+        registrar_auditoria("Visualización jerárquica del árbol de directorios solicitada.")
