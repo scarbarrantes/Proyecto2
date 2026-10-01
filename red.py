@@ -15,15 +15,65 @@ class NetworkGraph:
             print("El servidor ya existe en la red.")
 
     def agregar_conexion(self, origen, destino, latencia):
-        """Agrega una arista ponderada bidireccional (fibra óptica)."""
-        if origen in self.adj and destino in self.adj:
-            self.adj[origen][destino] = latencia
-            self.adj[destino][origen] = latencia # Grafo no dirigido
-            registrar_auditoria(f"Conexión establecida entre {origen} y {destino} con latencia {latencia}ms")
-            print(f"Conexión creada: {origen} <---> {destino} ({latencia} ms)")
-        else:
-            print("Error: Uno o ambos servidores no existen en la red.")
+        """Agrega una conexión bidireccional con una latencia válida."""
 
+        # Validar que los dos servidores existan en el grafo
+        if origen not in self.adj or destino not in self.adj:
+            print("Error: Uno o ambos servidores no existen en la red.")
+            return
+
+        # Evitar que un servidor se conecte consigo mismo
+        if origen == destino:
+            print("Error: Un servidor no puede conectarse consigo mismo.")
+            return
+
+        # La latencia debe representar un valor positivo
+        if latencia <= 0:
+            print("Error: La latencia debe ser mayor que 0 ms.")
+            return
+
+        # Evitar crear dos veces la misma conexión
+        if destino in self.adj[origen]:
+            print("Error: La conexión entre esos servidores ya existe.")
+            return
+
+        # Crear la conexión en ambos sentidos porque el grafo es no dirigido
+        self.adj[origen][destino] = latencia
+        self.adj[destino][origen] = latencia
+
+        registrar_auditoria(
+            f"Conexión establecida entre {origen} y {destino} "
+            f"con latencia {latencia}ms"
+        )
+
+        print(
+            f"Conexión creada: {origen} <---> "
+            f"{destino} ({latencia} ms)"
+        )
+
+    def eliminar_conexion(self, origen, destino):
+        """Elimina una conexión bidireccional entre dos servidores."""
+
+        # Validar que ambos servidores existan
+        if origen not in self.adj or destino not in self.adj:
+            print("Error: Uno o ambos servidores no existen en la red.")
+            return
+
+        # Validar que realmente exista una conexión entre ellos
+        if destino not in self.adj[origen]:
+            print("Error: No existe una conexión entre esos servidores.")
+            return
+
+        # Eliminar la conexión en ambos sentidos
+        del self.adj[origen][destino]
+        del self.adj[destino][origen]
+
+        registrar_auditoria(
+            f"Conexión eliminada entre {origen} y {destino}"
+        )
+
+        print(f"Conexión eliminada: {origen} <---> {destino}")
+   
     def dijkstra(self, origen, destino):
         """Calcula la ruta más corta (menor latencia) usando Dijkstra."""
         if origen not in self.adj or destino not in self.adj:
