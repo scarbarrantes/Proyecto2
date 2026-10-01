@@ -42,15 +42,20 @@ class Usuario:
             raise IndexError("Usuario solo define el índice 0 (username) y 1 (password)")
 
 class HashTable:
-    def __init__(self, capacidad=10):
+    def __init__(self, capacidad=101):
         self.capacidad = capacidad
         self.tabla = [[] for _ in range(capacidad)] # Encadenamiento para colisiones
         self.elementos = 0
 
-    def _funcion_hash(self, username):
-        """Función hash propia: suma el valor ASCII de cada caracter módulo capacidad."""
-        suma_ascii = sum(ord(char) for char in username)
-        return suma_ascii % self.capacidad
+   def _funcion_hash(self, username):
+    """
+    Hash polinomial: h = (h * 31 + ord(c)) % capacidad.
+    Depende del orden de los caracteres, evitando colisiones entre anagramas.
+    """
+    h = 0
+    for char in username:
+        h = (h * 31 + ord(char)) % self.capacidad
+    return h
 
     def insertar(self, username, password):
         indice = self._funcion_hash(username)
@@ -141,3 +146,64 @@ class HashTable:
         if not mostrar_passwords:
             password = "*" * len(str(password))
         return f"username='{username}' password='{password}'"
+        
+        
+def registrar_usuario(tabla, username, password):
+    """
+    Registra un usuario con validaciones de negocio.
+    A diferencia de tabla.insertar(), NO sobreescribe usuarios existentes.
+    Retorna True si se registró, False si falló.
+    """
+    # Validaciones de entrada
+    if not username or not password:
+        print("Usuario y contraseña no pueden estar vacíos.")
+        registrar_auditoria("REGISTRO FALLIDO | razón='campos vacíos'")
+        return False
+
+    if len(username) < 3:
+        print("El usuario debe tener al menos 3 caracteres.")
+        registrar_auditoria(f"REGISTRO FALLIDO | usuario='{username}' | razón='username corto'")
+        return False
+
+    if len(password) < 4:
+        print("La contraseña debe tener al menos 4 caracteres.")
+        registrar_auditoria(f"REGISTRO FALLIDO | usuario='{username}' | razón='password corta'")
+        return False
+
+    # Detectar duplicados ANTES de insertar
+    if tabla.buscar_usuario(username) is not None:
+        print(f"El usuario '{username}' ya existe.")
+        registrar_auditoria(f"REGISTRO FALLIDO | usuario='{username}' | razón='duplicado'")
+        return False
+
+    tabla.insertar(username, password)
+    print(f"Usuario '{username}' registrado correctamente.")
+    return True
+
+
+def iniciar_sesion(tabla, username, password):
+    """
+    Valida credenciales con validaciones de negocio.
+    Retorna True si el login fue exitoso, False en caso contrario.
+    """
+    # Validaciones de entrada
+    if not username or not password:
+        print("Debes ingresar usuario y contraseña.")
+        registrar_auditoria("LOGIN FALLIDO | razón='campos vacíos'")
+        return False
+
+    # Diferenciar "usuario no existe" vs "password incorrecta"
+    usuario = tabla.buscar_usuario(username)
+    if usuario is None:
+        print("Usuario no encontrado.")
+        registrar_auditoria(f"LOGIN FALLIDO | usuario='{username}' | razón='no existe'")
+        return False
+
+    if usuario[1] != password:
+        print("Contraseña incorrecta.")
+        registrar_auditoria(f"LOGIN FALLIDO | usuario='{username}' | razón='password incorrecta'")
+        return False
+
+    print(f"Bienvenido, {username}.")
+    registrar_auditoria(f"LOGIN EXITOSO | usuario='{username}'")
+    return True
