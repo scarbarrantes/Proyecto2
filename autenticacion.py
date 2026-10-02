@@ -126,6 +126,29 @@ class HashTable:
                 colisiones[indice] = [entrada[0] for entrada in cadena]
         return colisiones
 
+    def mostrar_colisiones(self, mostrar_passwords=False):
+        """Imprime únicamente los buckets que presentan colisiones.
+
+        Reutiliza detectar_colisiones() para no duplicar la lógica de
+        detección y conserva el estilo de impresión de mostrar_tabla():
+        una cabecera de resumen y, por cada bucket en conflicto, su índice y
+        los usuarios implicados (enmascarando las contraseñas salvo que se
+        pase mostrar_passwords=True).
+
+        Si no existe ninguna colisión, imprime un mensaje claro indicándolo.
+        """
+        colisiones = self.detectar_colisiones()
+        print(f"Colisiones | capacidad={self.capacidad} "
+              f"| buckets en conflicto={len(colisiones)}")
+        if not colisiones:
+            print("  (sin colisiones: cada bucket tiene como máximo un usuario)")
+            return
+        for indice in sorted(colisiones):
+            cadena = self.tabla[indice]
+            print(f"  [{indice}] {len(cadena)} usuario(s)  <-- colisión (encadenamiento)")
+            for posicion, entrada in enumerate(cadena, start=1):
+                print(f"        #{posicion} {self._formatear_entrada(entrada, mostrar_passwords)}")
+
     def _formatear_entrada(self, entrada, mostrar_passwords=False):
         """Devuelve una cadena legible para una entrada almacenada en un bucket.
 
