@@ -183,3 +183,90 @@ def demostracion_colisiones():
 
     print("=== Demostración: manejo de colisiones por encadenamiento ===")
     tabla.mostrar_colisiones()
+    
+def registrar_usuario(tabla, username, password):
+    """
+    Registra un usuario con validaciones de seguridad.
+    NO sobreescribe usuarios existentes (a diferencia de tabla.insertar()).
+    Registra todos los intentos en auditoría (éxito o fallo).
+    """
+    # Validación: campos vacíos
+    if not username or not password:
+        print("Usuario y contraseña no pueden estar vacíos.")
+        registrar_auditoria("SEGURIDAD | REGISTRO FALLIDO | razón='campos vacíos'")
+        return False
+
+    # Validación: longitud mínima
+    if len(username) < 3:
+        print("El usuario debe tener al menos 3 caracteres.")
+        registrar_auditoria(
+            f"SEGURIDAD | REGISTRO FALLIDO | usuario='{username}' | razón='username corto'"
+        )
+        return False
+
+    if len(password) < 4:
+        print("La contraseña debe tener al menos 4 caracteres.")
+        registrar_auditoria(
+            f"SEGURIDAD | REGISTRO FALLIDO | usuario='{username}' | razón='password corta'"
+        )
+        return False
+
+    # Validación: usuario duplicado
+    if tabla.buscar_usuario(username) is not None:
+        print(f"El usuario '{username}' ya existe.")
+        registrar_auditoria(
+            f"SEGURIDAD | REGISTRO FALLIDO | usuario='{username}' | razón='duplicado'"
+        )
+        return False
+
+    # Inserción (Julio ya registra su propio evento de auditoría)
+    tabla.insertar(username, password)
+    print(f"Usuario '{username}' registrado correctamente.")
+    registrar_auditoria(f"SEGURIDAD | REGISTRO EXITOSO | usuario='{username}'")
+    return True
+
+
+def iniciar_sesion(tabla, username, password):
+    """
+    Inicia sesión con validaciones de seguridad.
+    Registra TODOS los intentos (exitosos y fallidos) en auditoría.
+    """
+    # Validación: campos vacíos
+    if not username or not password:
+        print("Debes ingresar usuario y contraseña.")
+        registrar_auditoria("SEGURIDAD | LOGIN FALLIDO | razón='campos vacíos'")
+        return False
+
+    # Verificar si el usuario existe
+    usuario = tabla.buscar_usuario(username)
+    if usuario is None:
+        print("Usuario no encontrado.")
+        registrar_auditoria(
+            f"SEGURIDAD | LOGIN FALLIDO | usuario='{username}' | razón='no existe'"
+        )
+        return False
+
+    # Verificar contraseña
+    if usuario[1] != password:
+        print("Contraseña incorrecta.")
+        registrar_auditoria(
+            f"SEGURIDAD | LOGIN FALLIDO | usuario='{username}' | razón='password incorrecta'"
+        )
+        return False
+
+    # Éxito
+    print(f"Bienvenido, {username}.")
+    registrar_auditoria(f"SEGURIDAD | LOGIN EXITOSO | usuario='{username}'")
+    return True
+
+
+def cerrar_sesion(username):
+    """Registra el cierre de sesión en auditoría."""
+    if username:
+        registrar_auditoria(f"SEGURIDAD | LOGOUT | usuario='{username}'")
+        print(f"Sesión cerrada para '{username}'.")
+
+
+def registrar_acceso_denegado(modulo):
+    """Registra intentos de acceso a módulos sin sesión activa."""
+    registrar_auditoria(f"SEGURIDAD | ACCESO DENEGADO | módulo='{modulo}' | razón='sin sesión'")
