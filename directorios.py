@@ -72,6 +72,14 @@ class ArbolDirectorios:
         Crea un nuevo nodo (carpeta o archivo) y lo anexa al nodo padre.
         Garantiza la relación padre/hijo del sistema de archivos.
         """
+        if not nombre or not nombre.strip():
+            print("Error: El nombre no puede estar vacío ni contener solo espacios.")
+            return None
+
+        if any(hijo.nombre == nombre for hijo in padre.hijos):
+            print(f"Error: Ya existe un elemento llamado '{nombre}' en esta carpeta.")
+            return None
+
         nuevo_nodo = NodoArchivo(nombre, es_carpeta)
         padre.agregar_hijo(nuevo_nodo)
         return nuevo_nodo
