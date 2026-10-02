@@ -1,10 +1,19 @@
 # menu.py
 
 import os
-from auditoria import leer_auditoria
-from autenticacion import HashTable
+from auditoria import leer_auditoria, registrar_auditoria
+from autenticacion import (
+    HashTable,
+    registrar_usuario,
+    iniciar_sesion,
+    cerrar_sesion,
+    registrar_acceso_denegado,
+    )
 from directorios import ArbolDirectorios
 from red import NetworkGraph
+
+# Sesión activa (None = nadie logueado)
+usuario_actual = None
 
 def limpiar_pantalla():
     """Limpia la consola según el sistema operativo."""
@@ -90,14 +99,21 @@ def menu_directorios(arbol_directorios):
 
 
 def menu_autenticacion(tabla_usuarios):
+    global usuario_actual
+
     while True:
         limpiar_pantalla()
         print("=== AUTENTICACIÓN DE USUARIOS ===\n")
+
+        if usuario_actual:
+            print(f"Sesión activa: {usuario_actual}\n")
+
         print("1. Registrar usuario")
         print("2. Iniciar sesión")
         print("3. Buscar usuario")
         print("4. Mostrar tabla Hash")
         print("5. Mostrar colisiones")
+        print("6. Cerrar sesión")
         print("0. Volver al menú principal")
 
         opcion = input("\nSeleccione una opción: ").strip()
@@ -105,20 +121,16 @@ def menu_autenticacion(tabla_usuarios):
         if opcion == "1":
             username = input("Username: ").strip()
             password = input("Password: ").strip()
-            if not username or not password:
-                print("Username y password no pueden estar vacíos.")
-            else:
-                tabla_usuarios.insertar(username, password)
+            limpiar_pantalla()
+            registrar_usuario(tabla_usuarios, username, password)
             pausar()
 
         elif opcion == "2":
             username = input("Username: ").strip()
             password = input("Password: ").strip()
             limpiar_pantalla()
-            if tabla_usuarios.autenticar(username, password):
-                print("Inicio de sesión exitoso.")
-            else:
-                print("Usuario o contraseña incorrectos.")
+            if iniciar_sesion(tabla_usuarios, username, password):
+                usuario_actual = username
             pausar()
 
         elif opcion == "3":
@@ -141,13 +153,21 @@ def menu_autenticacion(tabla_usuarios):
             tabla_usuarios.mostrar_colisiones()
             pausar()
 
+        elif opcion == "6":
+            limpiar_pantalla()
+            if usuario_actual:
+                cerrar_sesion(usuario_actual)
+                usuario_actual = None
+            else:
+                print("No hay sesión activa.")
+            pausar()
+
         elif opcion == "0":
             break
 
         else:
             print("\nOpción inválida. Intente nuevamente.")
             pausar()
-
 
 def menu_red(grafo_red):
     while True:
@@ -227,6 +247,8 @@ def menu_auditoria():
 
 
 def ejecutar_menu():
+    global usuario_actual
+
     arbol_directorios = ArbolDirectorios()
     tabla_usuarios = HashTable(capacidad=101)
     grafo_red = NetworkGraph()
@@ -237,19 +259,33 @@ def ejecutar_menu():
         opcion = input("\nSeleccione una opción: ").strip()
 
         if opcion == "1":
-            menu_directorios(arbol_directorios)
+            if usuario_actual is None:
+                limpiar_pantalla()
+                print("Debes iniciar sesión primero.")
+                registrar_acceso_denegado("directorios")
+                pausar()
+            else:
+                menu_directorios(arbol_directorios)
 
         elif opcion == "2":
             menu_autenticacion(tabla_usuarios)
 
         elif opcion == "3":
-            menu_red(grafo_red)
+            if usuario_actual is None:
+                limpiar_pantalla()
+                print("Debes iniciar sesión primero.")
+                registrar_acceso_denegado("red")
+                pausar()
+            else:
+                menu_red(grafo_red)
 
         elif opcion == "4":
             menu_auditoria()
 
         elif opcion == "0":
             limpiar_pantalla()
+            if usuario_actual:
+                cerrar_sesion(usuario_actual)
             print("Saliendo del sistema...")
             break
 
