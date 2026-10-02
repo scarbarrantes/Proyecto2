@@ -75,6 +75,23 @@ class NetworkGraph:
 
         print(f"Conexión eliminada: {origen} <---> {destino}")
         return True
+
+    def mostrar_red(self):
+        if not self.adj:
+            print("La red está vacía.")
+            return
+
+        print("--- SERVIDORES Y CONEXIONES ---")
+        conexiones_mostradas = set()
+        for servidor, vecinos in self.adj.items():
+            print(f"{servidor}:")
+            if not vecinos:
+                print("  (sin conexiones)")
+            for vecino, latencia in vecinos.items():
+                conexion = frozenset((servidor, vecino))
+                if conexion not in conexiones_mostradas:
+                    print(f"  {vecino} ({latencia} ms)")
+                    conexiones_mostradas.add(conexion)
    
     def dijkstra(self, origen, destino):
         """Calcula la ruta más corta (menor latencia) usando Dijkstra."""

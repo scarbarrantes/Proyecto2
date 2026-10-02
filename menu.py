@@ -149,6 +149,61 @@ def menu_autenticacion(tabla_usuarios):
             pausar()
 
 
+def menu_red(grafo_red):
+    while True:
+        limpiar_pantalla()
+        print("=== ADMINISTRACIÓN DE RED ===\n")
+        print("1. Agregar servidor")
+        print("2. Agregar conexión")
+        print("3. Eliminar conexión")
+        print("4. Mostrar red")
+        print("0. Volver al menú principal")
+
+        opcion = input("\nSeleccione una opción: ").strip()
+
+        if opcion == "1":
+            servidor = input("Nombre del servidor: ").strip()
+            limpiar_pantalla()
+            if not servidor:
+                print("El nombre del servidor no puede estar vacío.")
+            else:
+                grafo_red.agregar_servidor(servidor)
+            pausar()
+
+        elif opcion == "2":
+            origen = input("Servidor origen: ").strip()
+            destino = input("Servidor destino: ").strip()
+            latencia_ingresada = input("Latencia en milisegundos: ").strip()
+            try:
+                latencia = float(latencia_ingresada)
+            except ValueError:
+                limpiar_pantalla()
+                print("La latencia debe ser un número.")
+            else:
+                limpiar_pantalla()
+                grafo_red.agregar_conexion(origen, destino, latencia)
+            pausar()
+
+        elif opcion == "3":
+            origen = input("Servidor origen: ").strip()
+            destino = input("Servidor destino: ").strip()
+            limpiar_pantalla()
+            grafo_red.eliminar_conexion(origen, destino)
+            pausar()
+
+        elif opcion == "4":
+            limpiar_pantalla()
+            grafo_red.mostrar_red()
+            pausar()
+
+        elif opcion == "0":
+            break
+
+        else:
+            print("\nOpción inválida. Intente nuevamente.")
+            pausar()
+
+
 def ejecutar_menu():
     arbol_directorios = ArbolDirectorios()
     tabla_usuarios = HashTable(capacidad=101)
@@ -166,10 +221,7 @@ def ejecutar_menu():
             menu_autenticacion(tabla_usuarios)
 
         elif opcion == "3":
-            limpiar_pantalla()
-            print("=== ADMINISTRACIÓN DE RED ===\n")
-            print("Módulo de administración de red.")
-            pausar()
+            menu_red(grafo_red)
 
         elif opcion == "4":
             limpiar_pantalla()
