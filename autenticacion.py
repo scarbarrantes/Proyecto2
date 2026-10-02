@@ -160,3 +160,21 @@ class HashTable:
         if not mostrar_passwords:
             password = "*" * len(str(password))
         return f"username='{username}' password='{password}'"
+
+
+def demostracion_colisiones():
+    """Demuestra el manejo de colisiones por encadenamiento de la HashTable.
+    """
+    tabla = HashTable(capacidad=10)
+
+    pares = [
+        ("ab", "ba"),         # colisión en el bucket 5
+        ("roma", "amor"),     # colisión en el bucket 1
+        ("casa", "saca"),     # colisión en el bucket 8
+    ]
+    for primero, segundo in pares:
+        tabla.insertar(primero, f"clave_{primero}")
+        tabla.insertar(segundo, f"clave_{segundo}")
+
+    print("=== Demostración: manejo de colisiones por encadenamiento ===")
+    tabla.mostrar_colisiones()
