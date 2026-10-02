@@ -42,15 +42,20 @@ class Usuario:
             raise IndexError("Usuario solo define el índice 0 (username) y 1 (password)")
 
 class HashTable:
-    def __init__(self, capacidad=10):
+    def __init__(self, capacidad=101):
         self.capacidad = capacidad
         self.tabla = [[] for _ in range(capacidad)] # Encadenamiento para colisiones
         self.elementos = 0
 
-    def _funcion_hash(self, username):
-        """Función hash propia: suma el valor ASCII de cada caracter módulo capacidad."""
-        suma_ascii = sum(ord(char) for char in username)
-        return suma_ascii % self.capacidad
+   def _funcion_hash(self, username):
+    """
+    Hash polinomial: h = (h * 31 + ord(c)) % capacidad.
+    Depende del orden de los caracteres, evitando colisiones entre anagramas.
+    """
+    h = 0
+    for char in username:
+        h = (h * 31 + ord(char)) % self.capacidad
+    return h
 
     def insertar(self, username, password):
         indice = self._funcion_hash(username)
