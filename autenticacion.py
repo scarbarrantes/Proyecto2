@@ -84,14 +84,6 @@ class HashTable:
 
         Reutiliza la función hash propia para calcular el índice y recorre
         únicamente el bucket correspondiente (no revisa el resto de la tabla).
-
-        Es compatible con los dos formatos que puede contener un bucket:
-          - listas [username, password]  -> formato actual de insertar()
-          - objetos Usuario              -> formato de la migración futura
-        En el primer caso construye un Usuario; en el segundo devuelve la
-        misma instancia almacenada.
-
-        Complejidad temporal: O(1 + n/m) promedio (n usuarios, m capacidad).
         """
         indice = self._funcion_hash(username)
         for par in self.tabla[indice]:
@@ -103,16 +95,6 @@ class HashTable:
 
     def mostrar_tabla(self, mostrar_passwords=False):
         """Imprime el contenido completo de la tabla: cada índice y su bucket.
-
-        Compatible con los dos formatos que puede contener un bucket:
-          - listas [username, password]  -> formato actual de insertar()
-          - objetos Usuario              -> formato de la migración futura
-        Las contraseñas se muestran enmascaradas salvo que se pase
-        mostrar_passwords=True (misma política que Usuario.__repr__).
-
-        Complejidad temporal: O(m + n)  (m = capacidad, n = elementos),
-        porque un recorrido de "mostrar todo" no puede ser más barato que
-        visitar los m índices y las n entradas almacenadas.
         """
         factor_carga = (self.elementos / self.capacidad) if self.capacidad else 0
         print(f"Tabla Hash | capacidad={self.capacidad} | usuarios={self.elementos} "
@@ -136,24 +118,6 @@ class HashTable:
         Recorre la tabla completa sin recalcular hashes: un bucket cuya lista
         almacena más de una entrada evidencia una colisión resuelta mediante
         encadenamiento (misma política que el aviso de mostrar_tabla).
-
-        Devuelve un diccionario listo para pruebas futuras:
-            {indice: [username1, username2, ...], ...}
-        donde cada clave es el índice del bucket en conflicto y el valor la
-        lista de nombres de usuario almacenados en él (en orden de inserción).
-        Si no existe ninguna colisión, devuelve un diccionario vacío {}.
-
-        Compatible con los dos formatos que puede contener un bucket:
-          - listas [username, password]  -> formato actual de insertar()
-          - objetos Usuario              -> formato de la migración futura
-        porque ambos responden al índice 0 (puente __getitem__ de Usuario).
-
-        No modifica el estado de la tabla: es una consulta de solo lectura,
-        por eso no registra auditoría (igual que buscar_usuario/mostrar_tabla).
-
-        Complejidad temporal: O(m + k)  (m = capacidad, k = usuarios que están
-        en buckets con colisión), ya que se inspecciona el tamaño de cada
-        bucket y solo se listan los nombres de los buckets colisionados.
         """
         colisiones = {}
         for indice in range(self.capacidad):
