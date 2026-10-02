@@ -47,15 +47,15 @@ class HashTable:
         self.tabla = [[] for _ in range(capacidad)] # Encadenamiento para colisiones
         self.elementos = 0
 
-   def _funcion_hash(self, username):
-    """
-    Hash polinomial: h = (h * 31 + ord(c)) % capacidad.
-    Depende del orden de los caracteres, evitando colisiones entre anagramas.
-    """
-    h = 0
-    for char in username:
-        h = (h * 31 + ord(char)) % self.capacidad
-    return h
+    def _funcion_hash(self, username):
+        """
+        Hash polinomial: h = (h * 31 + ord(c)) % capacidad.
+        Depende del orden de los caracteres, evitando colisiones entre anagramas.
+        """
+        h = 0
+        for char in username:
+            h = (h * 31 + ord(char)) % self.capacidad
+        return h
 
     def insertar(self, username, password):
         indice = self._funcion_hash(username)
@@ -66,7 +66,7 @@ class HashTable:
                 registrar_auditoria(f"Actualización de credenciales para el usuario: {username}")
                 return
         
-        self.tabla[indice].append([username, password])
+        self.tabla[indice].append(Usuario(username, password))
         self.elementos += 1
         registrar_auditoria(f"Usuario registrado exitosamente: {username}")
 
