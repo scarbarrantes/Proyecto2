@@ -204,6 +204,28 @@ def menu_red(grafo_red):
             pausar()
 
 
+def menu_auditoria():
+    while True:
+        limpiar_pantalla()
+        print("=== AUDITORÍA DEL SISTEMA ===\n")
+        print("1. Consultar historial de auditoría")
+        print("0. Volver al menú principal")
+
+        opcion = input("\nSeleccione una opción: ").strip()
+
+        if opcion == "1":
+            limpiar_pantalla()
+            leer_auditoria()
+            pausar()
+
+        elif opcion == "0":
+            break
+
+        else:
+            print("Opción inválida. Intente nuevamente.")
+            pausar()
+
+
 def ejecutar_menu():
     arbol_directorios = ArbolDirectorios()
     tabla_usuarios = HashTable(capacidad=101)
@@ -224,10 +246,7 @@ def ejecutar_menu():
             menu_red(grafo_red)
 
         elif opcion == "4":
-            limpiar_pantalla()
-            print("=== AUDITORÍA DEL SISTEMA ===\n")
-            leer_auditoria()
-            pausar()
+            menu_auditoria()
 
         elif opcion == "0":
             limpiar_pantalla()
