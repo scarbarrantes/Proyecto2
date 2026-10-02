@@ -1,9 +1,1 @@
-[2026-10-01 23:55:27] Usuario registrado exitosamente: johnny
-[2026-10-01 23:55:27] Inicio de sesión exitoso: johnny
-[2026-10-01 23:55:27] Fallo de inicio de sesión (Contraseña incorrecta): johnny
-[2026-10-01 23:57:55] Usuario registrado exitosamente: ab
-[2026-10-01 23:57:55] Usuario registrado exitosamente: ba
-[2026-10-01 23:57:55] Usuario registrado exitosamente: roma
-[2026-10-01 23:57:55] Usuario registrado exitosamente: amor
-[2026-10-01 23:57:55] Usuario registrado exitosamente: casa
-[2026-10-01 23:57:55] Usuario registrado exitosamente: saca
+
