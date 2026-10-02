@@ -89,6 +89,66 @@ def menu_directorios(arbol_directorios):
             pausar()
 
 
+def menu_autenticacion(tabla_usuarios):
+    while True:
+        limpiar_pantalla()
+        print("=== AUTENTICACIÓN DE USUARIOS ===\n")
+        print("1. Registrar usuario")
+        print("2. Iniciar sesión")
+        print("3. Buscar usuario")
+        print("4. Mostrar tabla Hash")
+        print("5. Mostrar colisiones")
+        print("0. Volver al menú principal")
+
+        opcion = input("\nSeleccione una opción: ").strip()
+
+        if opcion == "1":
+            username = input("Username: ").strip()
+            password = input("Password: ").strip()
+            if not username or not password:
+                print("Username y password no pueden estar vacíos.")
+            else:
+                tabla_usuarios.insertar(username, password)
+            pausar()
+
+        elif opcion == "2":
+            username = input("Username: ").strip()
+            password = input("Password: ").strip()
+            limpiar_pantalla()
+            if tabla_usuarios.autenticar(username, password):
+                print("Inicio de sesión exitoso.")
+            else:
+                print("Usuario o contraseña incorrectos.")
+            pausar()
+
+        elif opcion == "3":
+            username = input("Username: ").strip()
+            limpiar_pantalla()
+            usuario = tabla_usuarios.buscar_usuario(username)
+            if usuario is not None:
+                print(f"Usuario encontrado: {usuario}")
+            else:
+                print("El usuario no existe.")
+            pausar()
+
+        elif opcion == "4":
+            limpiar_pantalla()
+            tabla_usuarios.mostrar_tabla()
+            pausar()
+
+        elif opcion == "5":
+            limpiar_pantalla()
+            tabla_usuarios.mostrar_colisiones()
+            pausar()
+
+        elif opcion == "0":
+            break
+
+        else:
+            print("\nOpción inválida. Intente nuevamente.")
+            pausar()
+
+
 def ejecutar_menu():
     arbol_directorios = ArbolDirectorios()
     tabla_usuarios = HashTable(capacidad=101)
@@ -103,10 +163,7 @@ def ejecutar_menu():
             menu_directorios(arbol_directorios)
 
         elif opcion == "2":
-            limpiar_pantalla()
-            print("=== AUTENTICACIÓN DE USUARIOS ===\n")
-            print("Módulo de autenticación.")
-            pausar()
+            menu_autenticacion(tabla_usuarios)
 
         elif opcion == "3":
             limpiar_pantalla()
