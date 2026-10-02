@@ -130,6 +130,38 @@ class HashTable:
             for posicion, entrada in enumerate(cadena, start=1):
                 print(f"        #{posicion} {self._formatear_entrada(entrada, mostrar_passwords)}")
 
+    def detectar_colisiones(self):
+        """Detecta los buckets con más de un usuario (colisiones encadenadas).
+
+        Recorre la tabla completa sin recalcular hashes: un bucket cuya lista
+        almacena más de una entrada evidencia una colisión resuelta mediante
+        encadenamiento (misma política que el aviso de mostrar_tabla).
+
+        Devuelve un diccionario listo para pruebas futuras:
+            {indice: [username1, username2, ...], ...}
+        donde cada clave es el índice del bucket en conflicto y el valor la
+        lista de nombres de usuario almacenados en él (en orden de inserción).
+        Si no existe ninguna colisión, devuelve un diccionario vacío {}.
+
+        Compatible con los dos formatos que puede contener un bucket:
+          - listas [username, password]  -> formato actual de insertar()
+          - objetos Usuario              -> formato de la migración futura
+        porque ambos responden al índice 0 (puente __getitem__ de Usuario).
+
+        No modifica el estado de la tabla: es una consulta de solo lectura,
+        por eso no registra auditoría (igual que buscar_usuario/mostrar_tabla).
+
+        Complejidad temporal: O(m + k)  (m = capacidad, k = usuarios que están
+        en buckets con colisión), ya que se inspecciona el tamaño de cada
+        bucket y solo se listan los nombres de los buckets colisionados.
+        """
+        colisiones = {}
+        for indice in range(self.capacidad):
+            cadena = self.tabla[indice]
+            if len(cadena) > 1:
+                colisiones[indice] = [entrada[0] for entrada in cadena]
+        return colisiones
+
     def _formatear_entrada(self, entrada, mostrar_passwords=False):
         """Devuelve una cadena legible para una entrada almacenada en un bucket.
 
