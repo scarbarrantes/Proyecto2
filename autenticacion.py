@@ -47,15 +47,15 @@ class HashTable:
         self.tabla = [[] for _ in range(capacidad)] # Encadenamiento para colisiones
         self.elementos = 0
 
-   def _funcion_hash(self, username):
-    """
-    Hash polinomial: h = (h * 31 + ord(c)) % capacidad.
-    Depende del orden de los caracteres, evitando colisiones entre anagramas.
-    """
-    h = 0
-    for char in username:
-        h = (h * 31 + ord(char)) % self.capacidad
-    return h
+    def _funcion_hash(self, username):
+        """
+        Hash polinomial: h = (h * 31 + ord(c)) % capacidad.
+        Depende del orden de los caracteres, evitando colisiones entre anagramas.
+        """
+        h = 0
+        for char in username:
+            h = (h * 31 + ord(char)) % self.capacidad
+        return h
 
     def insertar(self, username, password):
         indice = self._funcion_hash(username)
@@ -66,7 +66,7 @@ class HashTable:
                 registrar_auditoria(f"Actualización de credenciales para el usuario: {username}")
                 return
         
-        self.tabla[indice].append([username, password])
+        self.tabla[indice].append(Usuario(username, password))
         self.elementos += 1
         registrar_auditoria(f"Usuario registrado exitosamente: {username}")
 
@@ -89,14 +89,6 @@ class HashTable:
 
         Reutiliza la función hash propia para calcular el índice y recorre
         únicamente el bucket correspondiente (no revisa el resto de la tabla).
-
-        Es compatible con los dos formatos que puede contener un bucket:
-          - listas [username, password]  -> formato actual de insertar()
-          - objetos Usuario              -> formato de la migración futura
-        En el primer caso construye un Usuario; en el segundo devuelve la
-        misma instancia almacenada.
-
-        Complejidad temporal: O(1 + n/m) promedio (n usuarios, m capacidad).
         """
         indice = self._funcion_hash(username)
         for par in self.tabla[indice]:
@@ -108,16 +100,6 @@ class HashTable:
 
     def mostrar_tabla(self, mostrar_passwords=False):
         """Imprime el contenido completo de la tabla: cada índice y su bucket.
-
-        Compatible con los dos formatos que puede contener un bucket:
-          - listas [username, password]  -> formato actual de insertar()
-          - objetos Usuario              -> formato de la migración futura
-        Las contraseñas se muestran enmascaradas salvo que se pase
-        mostrar_passwords=True (misma política que Usuario.__repr__).
-
-        Complejidad temporal: O(m + n)  (m = capacidad, n = elementos),
-        porque un recorrido de "mostrar todo" no puede ser más barato que
-        visitar los m índices y las n entradas almacenadas.
         """
         factor_carga = (self.elementos / self.capacidad) if self.capacidad else 0
         print(f"Tabla Hash | capacidad={self.capacidad} | usuarios={self.elementos} "
@@ -135,6 +117,43 @@ class HashTable:
             for posicion, entrada in enumerate(cadena, start=1):
                 print(f"        #{posicion} {self._formatear_entrada(entrada, mostrar_passwords)}")
 
+    def detectar_colisiones(self):
+        """Detecta los buckets con más de un usuario (colisiones encadenadas).
+
+        Recorre la tabla completa sin recalcular hashes: un bucket cuya lista
+        almacena más de una entrada evidencia una colisión resuelta mediante
+        encadenamiento (misma política que el aviso de mostrar_tabla).
+        """
+        colisiones = {}
+        for indice in range(self.capacidad):
+            cadena = self.tabla[indice]
+            if len(cadena) > 1:
+                colisiones[indice] = [entrada[0] for entrada in cadena]
+        return colisiones
+
+    def mostrar_colisiones(self, mostrar_passwords=False):
+        """Imprime únicamente los buckets que presentan colisiones.
+
+        Reutiliza detectar_colisiones() para no duplicar la lógica de
+        detección y conserva el estilo de impresión de mostrar_tabla():
+        una cabecera de resumen y, por cada bucket en conflicto, su índice y
+        los usuarios implicados (enmascarando las contraseñas salvo que se
+        pase mostrar_passwords=True).
+
+        Si no existe ninguna colisión, imprime un mensaje claro indicándolo.
+        """
+        colisiones = self.detectar_colisiones()
+        print(f"Colisiones | capacidad={self.capacidad} "
+              f"| buckets en conflicto={len(colisiones)}")
+        if not colisiones:
+            print("  (sin colisiones: cada bucket tiene como máximo un usuario)")
+            return
+        for indice in sorted(colisiones):
+            cadena = self.tabla[indice]
+            print(f"  [{indice}] {len(cadena)} usuario(s)  <-- colisión (encadenamiento)")
+            for posicion, entrada in enumerate(cadena, start=1):
+                print(f"        #{posicion} {self._formatear_entrada(entrada, mostrar_passwords)}")
+
     def _formatear_entrada(self, entrada, mostrar_passwords=False):
         """Devuelve una cadena legible para una entrada almacenada en un bucket.
 
@@ -146,64 +165,21 @@ class HashTable:
         if not mostrar_passwords:
             password = "*" * len(str(password))
         return f"username='{username}' password='{password}'"
-        
-        
-def registrar_usuario(tabla, username, password):
+
+
+def demostracion_colisiones():
+    """Demuestra el manejo de colisiones por encadenamiento de la HashTable.
     """
-    Registra un usuario con validaciones de negocio.
-    A diferencia de tabla.insertar(), NO sobreescribe usuarios existentes.
-    Retorna True si se registró, False si falló.
-    """
-    # Validaciones de entrada
-    if not username or not password:
-        print("Usuario y contraseña no pueden estar vacíos.")
-        registrar_auditoria("REGISTRO FALLIDO | razón='campos vacíos'")
-        return False
+    tabla = HashTable(capacidad=10)
 
-    if len(username) < 3:
-        print("El usuario debe tener al menos 3 caracteres.")
-        registrar_auditoria(f"REGISTRO FALLIDO | usuario='{username}' | razón='username corto'")
-        return False
+    pares = [
+        ("ab", "ba"),         # colisión en el bucket 5
+        ("roma", "amor"),     # colisión en el bucket 1
+        ("casa", "saca"),     # colisión en el bucket 8
+    ]
+    for primero, segundo in pares:
+        tabla.insertar(primero, f"clave_{primero}")
+        tabla.insertar(segundo, f"clave_{segundo}")
 
-    if len(password) < 4:
-        print("La contraseña debe tener al menos 4 caracteres.")
-        registrar_auditoria(f"REGISTRO FALLIDO | usuario='{username}' | razón='password corta'")
-        return False
-
-    # Detectar duplicados ANTES de insertar
-    if tabla.buscar_usuario(username) is not None:
-        print(f"El usuario '{username}' ya existe.")
-        registrar_auditoria(f"REGISTRO FALLIDO | usuario='{username}' | razón='duplicado'")
-        return False
-
-    tabla.insertar(username, password)
-    print(f"Usuario '{username}' registrado correctamente.")
-    return True
-
-
-def iniciar_sesion(tabla, username, password):
-    """
-    Valida credenciales con validaciones de negocio.
-    Retorna True si el login fue exitoso, False en caso contrario.
-    """
-    # Validaciones de entrada
-    if not username or not password:
-        print("Debes ingresar usuario y contraseña.")
-        registrar_auditoria("LOGIN FALLIDO | razón='campos vacíos'")
-        return False
-
-    # Diferenciar "usuario no existe" vs "password incorrecta"
-    usuario = tabla.buscar_usuario(username)
-    if usuario is None:
-        print("Usuario no encontrado.")
-        registrar_auditoria(f"LOGIN FALLIDO | usuario='{username}' | razón='no existe'")
-        return False
-
-    if usuario[1] != password:
-        print("Contraseña incorrecta.")
-        registrar_auditoria(f"LOGIN FALLIDO | usuario='{username}' | razón='password incorrecta'")
-        return False
-
-    print(f"Bienvenido, {username}.")
-    registrar_auditoria(f"LOGIN EXITOSO | usuario='{username}'")
-    return True
+    print("=== Demostración: manejo de colisiones por encadenamiento ===")
+    tabla.mostrar_colisiones()

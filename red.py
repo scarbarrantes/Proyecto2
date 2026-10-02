@@ -20,22 +20,22 @@ class NetworkGraph:
         # Validar que los dos servidores existan en el grafo
         if origen not in self.adj or destino not in self.adj:
             print("Error: Uno o ambos servidores no existen en la red.")
-            return
+            return False
 
         # Evitar que un servidor se conecte consigo mismo
         if origen == destino:
             print("Error: Un servidor no puede conectarse consigo mismo.")
-            return
+            return False
 
         # La latencia debe representar un valor positivo
         if latencia <= 0:
             print("Error: La latencia debe ser mayor que 0 ms.")
-            return
+            return False
 
         # Evitar crear dos veces la misma conexión
         if destino in self.adj[origen]:
             print("Error: La conexión entre esos servidores ya existe.")
-            return
+            return False
 
         # Crear la conexión en ambos sentidos porque el grafo es no dirigido
         self.adj[origen][destino] = latencia
@@ -50,6 +50,7 @@ class NetworkGraph:
             f"Conexión creada: {origen} <---> "
             f"{destino} ({latencia} ms)"
         )
+        return True
 
     def eliminar_conexion(self, origen, destino):
         """Elimina una conexión bidireccional entre dos servidores."""
@@ -57,12 +58,12 @@ class NetworkGraph:
         # Validar que ambos servidores existan
         if origen not in self.adj or destino not in self.adj:
             print("Error: Uno o ambos servidores no existen en la red.")
-            return
+            return False
 
         # Validar que realmente exista una conexión entre ellos
         if destino not in self.adj[origen]:
             print("Error: No existe una conexión entre esos servidores.")
-            return
+            return False
 
         # Eliminar la conexión en ambos sentidos
         del self.adj[origen][destino]
@@ -73,6 +74,24 @@ class NetworkGraph:
         )
 
         print(f"Conexión eliminada: {origen} <---> {destino}")
+        return True
+
+    def mostrar_red(self):
+        if not self.adj:
+            print("La red está vacía.")
+            return
+
+        print("--- SERVIDORES Y CONEXIONES ---")
+        conexiones_mostradas = set()
+        for servidor, vecinos in self.adj.items():
+            print(f"{servidor}:")
+            if not vecinos:
+                print("  (sin conexiones)")
+            for vecino, latencia in vecinos.items():
+                conexion = frozenset((servidor, vecino))
+                if conexion not in conexiones_mostradas:
+                    print(f"  {vecino} ({latencia} ms)")
+                    conexiones_mostradas.add(conexion)
    
     def dijkstra(self, origen, destino):
         """Calcula la ruta más corta (menor latencia) usando Dijkstra."""
