@@ -68,8 +68,6 @@ def submenu_autenticacion(tabla):
             
 def ejecutar_menu():
     tabla_usuarios = HashTable(capacidad=101)   # ← AGREGAS ESTA LÍNEA
-    while True:
-        ...
         
     while True:
         mostrar_menu_principal()
