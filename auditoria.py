@@ -1,5 +1,5 @@
 # auditoria.py
-
+import os
 import datetime
 import os
 
@@ -24,12 +24,10 @@ def registrar_auditoria(detalle):
 
     except Exception as e:
         print(f"Error al escribir en el log: {e}")
-
-
+        
 def leer_auditoria():
-    """
-    Muestra el contenido completo del archivo de auditoría en consola.
-    Permite consultar las acciones registradas en el sistema.
+    """Vuelca el contenido completo del archivo de auditoría en consola.
+    Cumple con el requisito del proyecto: opción de menú para ver el log en vivo.
     """
 
     if not os.path.exists(ARCHIVO_AUDITORIA):

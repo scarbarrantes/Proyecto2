@@ -168,8 +168,10 @@ def menu_autenticacion(tabla_usuarios):
         else:
             print("\nOpción inválida. Intente nuevamente.")
             pausar()
-
-def menu_red(grafo_red):
+            
+def ejecutar_menu():
+    tabla_usuarios = HashTable(capacidad=101)   # ← AGREGAS ESTA LÍNEA
+        
     while True:
         limpiar_pantalla()
         print("=== ADMINISTRACIÓN DE RED ===\n")
