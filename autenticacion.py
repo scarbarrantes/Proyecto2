@@ -184,6 +184,69 @@ def demostracion_colisiones():
     tabla.mostrar_colisiones()
 
 
+def registrar_usuario(tabla, username, password):
+    """Registra un usuario en la tabla hash usando tabla.insertar().
+
+    Envuelve la API de HashTable con mensajes claros de éxito/fallo para
+    el menú. Si el usuario ya existía, HashTable.insertar() actualiza su
+    contraseña sin duplicar la entrada, por lo que se informa como
+    "actualización" en lugar de "registro".
+
+    Args:
+        tabla (HashTable): tabla donde registrar al usuario.
+        username (str): nombre de usuario.
+        password (str): contraseña del usuario.
+
+    Returns:
+        bool: True si el registro/actualización se completó, False si los
+        datos estaban vacíos.
+    """
+    if not username or not password:
+        print("[Registro] Error: usuario y contraseña no pueden estar vacíos.")
+        return False
+
+    existia = tabla.buscar_usuario(username) is not None
+    tabla.insertar(username, password)
+
+    if existia:
+        print(f"[Registro] Usuario '{username}' ya existía: "
+              f"contraseña actualizada correctamente.")
+    else:
+        print(f"[Registro] Usuario '{username}' registrado correctamente.")
+    return True
+
+
+def iniciar_sesion(tabla, username, password):
+    """Valida credenciales contra la tabla hash usando tabla.autenticar().
+
+    Muestra en consola el resultado del intento distinguiendo contraseña
+    incorrecta de usuario inexistente (misma distinción que la auditoría),
+    para que el mensaje de fallo sea siempre claro.
+
+    Args:
+        tabla (HashTable): tabla donde buscar las credenciales.
+        username (str): nombre de usuario.
+        password (str): contraseña ingresada.
+
+    Returns:
+        bool: True si las credenciales son válidas, False en caso contrario.
+    """
+    if not username or not password:
+        print("[Sesión] Error: usuario y contraseña no pueden estar vacíos.")
+        return False
+
+    if tabla.autenticar(username, password):
+        print(f"[Sesión] Inicio de sesión exitoso. Bienvenido(a), '{username}'.")
+        return True
+
+    if tabla.buscar_usuario(username) is None:
+        print(f"[Sesión] Acceso denegado: el usuario '{username}' no existe.")
+    else:
+        print(f"[Sesión] Acceso denegado: contraseña incorrecta "
+              f"para el usuario '{username}'.")
+    return False
+
+
 def pruebas_hash_table():
     """Suite de pruebas manual para la clase HashTable (evidencia Round 3).
 
