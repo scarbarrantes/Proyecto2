@@ -72,6 +72,14 @@ class ArbolDirectorios:
         Crea un nuevo nodo (carpeta o archivo) y lo anexa al nodo padre.
         Garantiza la relación padre/hijo del sistema de archivos.
         """
+        if not nombre or not nombre.strip():
+            print("Error: El nombre no puede estar vacío ni contener solo espacios.")
+            return None
+
+        if any(hijo.nombre == nombre for hijo in padre.hijos):
+            print(f"Error: Ya existe un elemento llamado '{nombre}' en esta carpeta.")
+            return None
+
         nuevo_nodo = NodoArchivo(nombre, es_carpeta)
         padre.agregar_hijo(nuevo_nodo)
         return nuevo_nodo
@@ -104,3 +112,25 @@ class ArbolDirectorios:
             print(f"❌ Elemento '{nombre}' no existe en el sistema.")
             registrar_auditoria(f"Búsqueda fallida en directorios: {nombre} no encontrado")
             return None    
+        
+    def eliminar_elemento(self, nombre):
+        """
+        Elimina un elemento del árbol en cascada, gestionando la memoria.
+        Cumple con: Eliminación recursiva en cascada.
+        """
+        if nombre == "/":
+            print("Error: No se permite eliminar el directorio raíz '/' del sistema.")
+            registrar_auditoria("Intento fallido de eliminar el directorio raíz '/'")
+            return False
+            
+        print(f"\nIniciando proceso de eliminación en cascada para: '{nombre}'...")
+        
+        # Inicia la eliminación en cascada desde la raíz
+        resultado = self.raiz.eliminar_hijo(nombre)
+        
+        if not resultado:
+            print(f"❌ Error: El elemento '{nombre}' no existe en el sistema.")
+            registrar_auditoria(f"Intento de eliminación fallido: '{nombre}' no encontrado")
+            
+       
+        return resultado

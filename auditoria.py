@@ -1,6 +1,8 @@
 # auditoria.py
 import os
 import datetime
+import os
+
 
 # Archivo donde se guarda el historial de acciones del sistema
 ARCHIVO_AUDITORIA = "network_audit_log.txt"
@@ -27,6 +29,7 @@ def leer_auditoria():
     """Vuelca el contenido completo del archivo de auditoría en consola.
     Cumple con el requisito del proyecto: opción de menú para ver el log en vivo.
     """
+
     if not os.path.exists(ARCHIVO_AUDITORIA):
         print("\n[Auditoría] El archivo aún no existe. No hay registros.")
         return
@@ -35,15 +38,18 @@ def leer_auditoria():
         contenido = f.read()
 
     print("\n===== HISTORIAL DE AUDITORÍA =====")
+
     if not contenido.strip():
         print("(El archivo está vacío)")
     else:
         print(contenido, end="")
+
     print("==================================")
 
 
 def limpiar_auditoria():
-    """Elimina el archivo de auditoría. Útil para pruebas y demostraciones."""
+    """Elimina el archivo de auditoría para realizar pruebas."""
+
     if os.path.exists(ARCHIVO_AUDITORIA):
         os.remove(ARCHIVO_AUDITORIA)
         print("[Auditoría] Historial eliminado.")
@@ -51,5 +57,5 @@ def limpiar_auditoria():
         print("[Auditoría] No existe archivo para eliminar.")
 
 
-# Alias para compatibilidad con módulos que importen 'log_evento'
+# Alias para mantener compatibilidad con otros módulos
 log_evento = registrar_auditoria

@@ -65,7 +65,7 @@ class HashTable:
                 registrar_auditoria(f"Actualización de credenciales para el usuario: {username}")
                 return
         
-        self.tabla[indice].append([username, password])
+        self.tabla[indice].append(Usuario(username, password))
         self.elementos += 1
         registrar_auditoria(f"Usuario registrado exitosamente: {username}")
 
