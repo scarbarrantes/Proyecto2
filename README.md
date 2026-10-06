@@ -1,22 +1,307 @@
-# Proyecto2
-Proyecto 2 de Estructuras de Datos 
+# 🌐 Network OS — Sistema de Archivos Distribuido y Enrutador de Red
 
+Proyecto académico de **Estructuras de Datos** que simula el núcleo lógico de un
+Sistema Operativo de Red (Network OS). El sistema integra:
+
+- **Árboles generales** para el sistema de directorios distribuidos.
+-  **Tabla Hash propia** (sin librerías) para autenticación O(1).
+-  **Grafos ponderados** para la topología de red (Dijkstra + BFS).
+-  **Motor de auditoría transaccional** con logs en archivo.
+- **Menú interactivo** que integra todos los módulos.
+
+---
+
+##  Estructura del Repositorio
+
+```
+Proyecto2/
+│
+├── main.py                  # Punto de entrada del sistema
+├── menu.py                  # Menú interactivo con submenús
+├── autenticacion.py         # Tabla Hash + capa de autenticación
+├── directorios.py           # Árbol de directorios
+├── red.py                   # Grafo ponderado y enrutamiento
+├── auditoria.py             # Registro de logs transaccionales
+├── network_audit_log.txt    # Archivo de auditoría (generado en runtime)
+├── test_flujo_completo.py   # Script de pruebas del flujo de autenticación
+├── .gitignore               # Exclusión de archivos temporales
+└── README.md                # Este archivo (incluye Bitácora de IA)
+```
+
+---
+
+## Cómo Ejecutar
+
+**Requisitos:** Python 3.10+ (sin dependencias externas)
+
+```bash
+git clone https://github.com/scarbarrantes/Proyecto2.git
+cd Proyecto2
+python main.py
+```
+
+Al iniciar, el sistema muestra un menú con las siguientes opciones:
+
+```
+1. Sistema de directorios
+2. Autenticación de usuarios
+3. Administración de red
+4. Auditoría del sistema
+0. Salir
+```
+
+---
+
+## Arquitectura de Módulos
+
+### 1. Sistema de Directorios (`directorios.py`)
+- Árbol **general** con nodos tipo `Carpeta` o `Archivo`.
+- Raíz única `/`.
+- Operaciones: crear, buscar recursivamente, mostrar con indentación y
+  **eliminar en cascada** (post-order, sin nodos huérfanos).
+
+### 2. Autenticación (`autenticacion.py`)
+- **Tabla Hash desde cero** (sin `dict` de Python).
+- Función hash **polinomial** propia: `h = (h * 31 + ord(c)) % capacidad`.
+- Resolución de colisiones por **encadenamiento**.
+- Capacidad por defecto: **101** (primo, mejor distribución).
+- Capa de negocio con validaciones: campos vacíos, longitud mínima y duplicados.
+- Registro completo de eventos de seguridad en auditoría.
+
+### 3. Red (`red.py`)
+- **Grafo ponderado**: vértices = servidores, aristas = latencia (ms).
+- Agregar y eliminar conexiones de forma dinámica.
+- **Dijkstra** para calcular la ruta más corta entre servidores.
+- **BFS** para el "Ping General" y detección de servidores aislados.
+
+### 4. Auditoría (`auditoria.py`)
+- Append automático a `network_audit_log.txt` con fecha y hora.
+- Función de lectura en vivo para consultar el historial.
+- Función de limpieza para pruebas.
+
+### 5. Menú (`menu.py`)
+- Menú principal con submenús por módulo.
+- Control de sesión activa: los módulos de directorios y red requieren login.
+- Opción de logout que registra el evento en auditoría.
+- Registro de accesos denegados.
+
+---
+
+## Organización por Rounds
+
+### Round 1 — Estructuras base y arquitectura
+**Objetivo:** crear las estructuras principales antes de conectarlas.
+
+- [x] Árbol de directorios: raíz, carpetas, archivos, relación padre/hijos
+- [x] Tabla Hash desde cero: estructura, función hash, almacenamiento
+- [x] Grafo ponderado: servidores, aristas, latencia
+- [x] Auditoría inicial + estructura base del menú principal
+- [x] Consolidación de módulos y corrección de incompatibilidades
+
+**Commits del round:**
+- `feat: estructura inicial del arbol de directorios`
+- `feat: funcion hash y almacenamiento de usuarios`
+- `feat: estructura base del grafo de servidores`
+- `feat: sistema inicial de auditoria`
+- `feat: estructura del menu principal`
+
+---
+
+### Round 2 — Funcionalidades completas
+**Objetivo:** hacer funcional cada estructura y comenzar la integración.
+
+- [x] Autenticación: registro e inicio de sesión conectado a la Tabla Hash
+- [x] Búsqueda recursiva de archivos y carpetas con visualización indentada
+- [x] Resolución manual de colisiones en la Tabla Hash y pruebas
+- [x] Conexiones dinámicas entre servidores con latencias
+- [x] Menú principal integrado (Directorios, Autenticación, Red, Auditoría)
+- [x] Opción para consultar en vivo `network_audit_log.txt`
+
+**Commits del round:**
+- `feat: autenticacion mediante tabla hash`
+- `feat: busqueda recursiva de archivos`
+- `feat: visualizacion jerarquica de directorios`
+- `feat: manejo de colisiones en tabla hash`
+- `feat: conexiones dinamicas entre servidores`
+- `feat: menu principal integrado`
+- `feat: consulta del historial de auditoria`
+
+---
+
+### Round 3 — Algoritmos y operaciones críticas
+**Objetivo:** completar las operaciones de mayor peso técnico y preparar la defensa.
+
+- [x] Integración de seguridad: registrar en auditoría inicios de sesión exitosos y fallidos
+- [x] Eliminación recursiva en cascada de carpetas, subcarpetas y archivos
+- [x] Pruebas de Tabla Hash y colisiones (explicación de la función hash)
+- [x] Implementación de **Dijkstra** para la ruta óptima entre servidores
+- [x] Implementación de **BFS** para el "Ping General" y detección de aislados
+- [x] Flujo completo de autenticación probado
+
+**Commits del round:**
+- `feat: registro de eventos de seguridad`
+- `feat: eliminacion recursiva en cascada`
+- `test: pruebas de colisiones de tabla hash`
+- `feat: algoritmo de dijkstra para rutas optimas`
+- `feat: recorrido bfs para diagnostico de red`
+- `feat: deteccion de servidores aislados`
+
+---
+
+### Round 4 — Integración, pruebas y entrega
+**Objetivo:** establecer el sistema completo, integrar las aclaraciones semanales
+y dejar el repositorio listo para la defensa.
+
+- [x] README final consolidado con Bitácora de IA completa
+- [x] Pruebas completas del árbol: crear, buscar, mostrar, eliminar
+- [x] Pruebas de autenticación y Hash: usuarios válidos, inválidos, duplicados
+- [x] Pruebas de red: conexiones, desconexiones, latencias, Dijkstra, BFS
+- [x] Integración final del menú, auditoría y pruebas del sistema completo
+- [x] Verificación de logs generados por acciones relevantes
+
+**Commits del round:**
+- `docs: actualizacion de readme y bitacora de ia`
+- `test: pruebas completas del arbol`
+- `test: pruebas de autenticacion y tabla hash`
+- `test: pruebas de algoritmos de red`
+- `fix: correcciones de integracion del sistema`
+- `fix: correcciones finales de auditoria`
+- `refactor: preparacion de version final`
+
+---
+
+## Flujo de Trabajo en GitHub
+
+El trabajo en equipo se evidencia mediante el uso de Git y GitHub:
+
+1. Cada integrante trabaja en su **rama personal**.
+2. Antes de empezar: `pull` desde `main` para actualizar.
+3. Commits siguiendo **Conventional Commits** (`feat:`, `fix:`, `test:`, `docs:`).
+4. Al terminar: **push → Pull Request → revisión de otro integrante → merge a main**.
+5. Todos vuelven a actualizar sus ramas desde `main`.
+
+**GitHub es responsabilidad de TODOS**, no solo de un integrante.
+
+---
+
+## 📋 Convenciones de Código
+
+- **Lenguaje:** Python 3.10+
+- **Clases:** `PascalCase` (`HashTable`, `Usuario`, `NetworkGraph`, `ArbolDirectorios`)
+- **Funciones/variables:** `snake_case` (`registrar_usuario`, `iniciar_sesion`)
+- **Constantes:** `UPPER_CASE` (`ARCHIVO_AUDITORIA`)
+- **Sin librerías externas** (solo stdlib: `os`, `datetime`, `heapq`).
+- **Docstrings** en cada función/método público.
+
+---
 
 ## Bitácora de Inteligencia Artificial
 
-> En cumplimiento con las condiciones de entrega, documentamos honestamente el
-> uso de IA. Toda salida fue revisada, adaptada y comprendida por el equipo.
+> En cumplimiento con las condiciones de entrega del proyecto, documentamos
+> honestamente el uso de IA en el desarrollo. Toda salida fue revisada,
+> adaptada y comprendida por el equipo.
 
 ### Herramientas utilizadas
 - **DeepSeek** — generación de fragmentos, explicación de algoritmos, depuración.
 - **ChatGPT** — apoyo en documentación y revisión de lógica.
 
-### Registro de Prompts (Round 1)
+### Aporte por integrante
 
-| # | Prompt utilizado | Adaptación realizada |
-|---|------------------|----------------------|
-| 1 | *"Ayúdame a consolidar un repositorio con módulos de árbol, hash, grafo y auditoría en Python, detectando incompatibilidades."* | Se unificaron tipos con `Enum`, se estandarizaron nombres de clases y firmas. |
-| 2 | *"Implementa un árbol general con búsqueda recursiva y eliminación en cascada post-order."* | Se adaptó `_liberar_subarbol` para romper referencias explícitamente. |
-| 3 | *"Función hash polinomial para strings con resolución de colisiones por encadenamiento."* | Se ajustó constante multiplicativa y tamaño de tabla (primo). |
-| 4 | *"Grafo ponderado con Dijkstra y BFS en Python sin librerías externas."* | Se reescribió cola de prioridad con `heapq` (stdlib permitido). |
-| 5 | *"Función de log con append a archivo incluyendo timestamp."* | Se añadió `encoding="utf-8"` y verificación de existencia del ñ
+> **PENDIENTE**: cada integrante debe completar su sección con los prompts
+> específicos que utilizó y cómo los adaptó al proyecto.
+
+#### Marco — Árbol de directorios
+
+**Prompts utilizados:**
+- _[Pendiente de completar]_
+
+**Adaptación realizada:**
+- _[Pendiente de completar]_
+
+---
+
+#### Julio — Tabla Hash y colisiones
+
+**Prompts utilizados:**
+- _[Pendiente de completar]_
+
+**Adaptación realizada:**
+- _[Pendiente de completar]_
+
+---
+
+#### Cristhian — Grafo y enrutamiento
+
+**Prompts utilizados:**
+- _[Pendiente de completar]_
+
+**Adaptación realizada:**
+- _[Pendiente de completar]_
+
+---
+
+#### Johnny — Menú y auditoría
+
+**Prompts utilizados:**
+- _[Pendiente de completar]_
+
+**Adaptación realizada:**
+- _[Pendiente de completar]_
+
+---
+
+#### Scaleth — Autenticación e integración
+
+**Prompts utilizados:**
+- _"Ayúdame a consolidar un repositorio con módulos de árbol, hash, grafo y auditoría en Python, detectando incompatibilidades."_
+- _"Implementa un árbol general con búsqueda recursiva y eliminación en cascada post-order."_
+- _"Función hash polinomial para strings con resolución de colisiones por encadenamiento."_
+- _"Grafo ponderado con Dijkstra y BFS en Python sin librerías externas."_
+- _"Función de log con append a archivo incluyendo timestamp."_
+- _"Implementa registro e inicio de sesión con tabla hash propia, sin usar dict."_
+- _"Cómo navegar recursivamente un árbol y mostrar la jerarquía con indentación."_
+- _"Estrategias manuales de resolución de colisiones en tabla hash."_
+- _"Cómo registrar eventos exitosos y fallidos en un log desde el módulo de autenticación."_
+- _"Explicación detallada de la eliminación post-order para evitar memory leaks."_
+
+**Adaptación realizada:**
+- Se unificaron tipos con `Enum` y se estandarizaron nombres de clases y firmas.
+- Se reemplazó el hash por suma ASCII por uno polinomial (`h * 31 + ord(c)`) para
+  eliminar colisiones entre anagramas.
+- Se agregó una capa de negocio con validaciones y diferenciación de errores.
+- Se integró auditoría en todos los eventos de autenticación.
+- Se implementó control de sesión activa y logout con registro en el log.
+
+---
+
+## Declaración de Honestidad Académica
+
+1. Toda salida de IA fue revisada, comprendida y adaptada al proyecto.
+2. Ningún integrante presentará código que no pueda explicar en la defensa técnica.
+3. La IA se usó como herramienta de apoyo, no como sustituto del aprendizaje.
+4. Esta bitácora se actualizará con los aportes de cada integrante del equipo.
+
+---
+
+## Estado Final del Proyecto
+
+- [x] Round 1 completado — estructuras base
+- [x] Round 2 completado — funcionalidades
+- [x] Round 3 completado — algoritmos críticos
+- [x] Round 4 completado — integración y entrega
+- [x] Defensa técnica preparada
+
+---
+
+## Defensa
+
+**Fecha:** martes 13 de octubre
+**Modalidad:** Defensa técnica — se cuestionará manipulación de punteros,
+matemática del hash y algoritmos del grafo. Todos los integrantes deben
+poder explicar cualquier parte del código presentado.
+
+---
+
+## Licencia
+
+Proyecto académico — uso educativo.
