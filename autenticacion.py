@@ -185,22 +185,8 @@ def demostracion_colisiones():
 
 
 def registrar_usuario(tabla, username, password):
-    """Registra un usuario en la tabla hash usando tabla.insertar().
-
-    Envuelve la API de HashTable con mensajes claros de éxito/fallo para
-    el menú. Si el usuario ya existía, HashTable.insertar() actualiza su
-    contraseña sin duplicar la entrada, por lo que se informa como
-    "actualización" en lugar de "registro".
-
-    Args:
-        tabla (HashTable): tabla donde registrar al usuario.
-        username (str): nombre de usuario.
-        password (str): contraseña del usuario.
-
-    Returns:
-        bool: True si el registro/actualización se completó, False si los
-        datos estaban vacíos.
-    """
+    """Registra un usuario en la tabla hash usando tabla.insertar()."""
+    
     if not username or not password:
         print("[Registro] Error: usuario y contraseña no pueden estar vacíos.")
         return False
@@ -217,20 +203,8 @@ def registrar_usuario(tabla, username, password):
 
 
 def iniciar_sesion(tabla, username, password):
-    """Valida credenciales contra la tabla hash usando tabla.autenticar().
+    """Valida credenciales contra la tabla hash usando tabla.autenticar()."""
 
-    Muestra en consola el resultado del intento distinguiendo contraseña
-    incorrecta de usuario inexistente (misma distinción que la auditoría),
-    para que el mensaje de fallo sea siempre claro.
-
-    Args:
-        tabla (HashTable): tabla donde buscar las credenciales.
-        username (str): nombre de usuario.
-        password (str): contraseña ingresada.
-
-    Returns:
-        bool: True si las credenciales son válidas, False en caso contrario.
-    """
     if not username or not password:
         print("[Sesión] Error: usuario y contraseña no pueden estar vacíos.")
         return False
@@ -248,22 +222,8 @@ def iniciar_sesion(tabla, username, password):
 
 
 def pruebas_hash_table():
-    """Suite de pruebas manual para la clase HashTable (evidencia Round 3).
-
-    No modifica HashTable ni Usuario: solo instancia la tabla y ejecuta su
-    API pública (insertar, autenticar, buscar_usuario, detectar_colisiones).
-
-    Cobertura:
-      1. Inserción de usuarios (conteo de elementos y actualización sin duplicar).
-      2. Autenticación con credenciales correctas.
-      3. Autenticación con contraseña incorrecta y con usuario inexistente.
-      4. Búsqueda de usuarios (existente y no existente).
-      5. Detección de colisiones con capacidad=101 usando pares verificados
-         con la función hash polinomial h = (h * 31 + ord(c)) % 101.
-
-    Returns:
-        bool: True si todas las pruebas pasan, False si alguna falla.
-    """
+    """Suite de pruebas manual para la clase HashTable (evidencia Round 3)."""
+    
     total = 0
     aprobadas = 0
 
