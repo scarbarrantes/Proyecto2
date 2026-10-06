@@ -182,3 +182,126 @@ def demostracion_colisiones():
 
     print("=== Demostración: manejo de colisiones por encadenamiento ===")
     tabla.mostrar_colisiones()
+
+
+def pruebas_hash_table():
+    """Suite de pruebas manual para la clase HashTable (evidencia Round 3).
+
+    No modifica HashTable ni Usuario: solo instancia la tabla y ejecuta su
+    API pública (insertar, autenticar, buscar_usuario, detectar_colisiones).
+
+    Cobertura:
+      1. Inserción de usuarios (conteo de elementos y actualización sin duplicar).
+      2. Autenticación con credenciales correctas.
+      3. Autenticación con contraseña incorrecta y con usuario inexistente.
+      4. Búsqueda de usuarios (existente y no existente).
+      5. Detección de colisiones con capacidad=101 usando pares verificados
+         con la función hash polinomial h = (h * 31 + ord(c)) % 101.
+
+    Returns:
+        bool: True si todas las pruebas pasan, False si alguna falla.
+    """
+    total = 0
+    aprobadas = 0
+
+    def verificar(descripcion, condicion, detalle=""):
+        """Registra una aserción y muestra PASS/FAIL en consola."""
+        nonlocal total, aprobadas
+        total += 1
+        if condicion:
+            aprobadas += 1
+        estado = "PASS" if condicion else "FAIL"
+        extra = f"  ({detalle})" if detalle else ""
+        print(f"  [{estado}] {descripcion}{extra}")
+
+    print("=" * 66)
+    print(" PRUEBAS UNITARIAS - HashTable | Round 3 | capacidad=101")
+    print("=" * 66)
+
+    # ---------- 1. Inserción de usuarios ----------
+    print("\n--- 1. Insercion de usuarios ---")
+    tabla = HashTable(capacidad=101)
+    tabla.insertar("alice", "Secret123")
+    verificar("insertar('alice') incrementa elementos a 1",
+              tabla.elementos == 1, f"elementos={tabla.elementos}")
+    tabla.insertar("bob", "hunter2")
+    verificar("insertar('bob') incrementa elementos a 2",
+              tabla.elementos == 2, f"elementos={tabla.elementos}")
+    tabla.insertar("alice", "NuevaClave")
+    alice = tabla.buscar_usuario("alice")
+    verificar("re-insertar('alice') actualiza la clave sin duplicar",
+              tabla.elementos == 2 and alice is not None
+              and alice.password == "NuevaClave",
+              f"elementos={tabla.elementos}")
+
+    # ---------- 2. Autenticación correcta ----------
+    print("\n--- 2. Autenticacion correcta ---")
+    verificar("autenticar('alice', 'NuevaClave') -> True",
+              tabla.autenticar("alice", "NuevaClave") is True)
+    verificar("autenticar('bob', 'hunter2') -> True",
+              tabla.autenticar("bob", "hunter2") is True)
+
+    # ---------- 3. Autenticación incorrecta ----------
+    print("\n--- 3. Autenticacion incorrecta ---")
+    verificar("autenticar('alice', 'clave_mala') -> False",
+              tabla.autenticar("alice", "clave_mala") is False)
+    verificar("autenticar('nadie', 'x') -> False (usuario inexistente)",
+              tabla.autenticar("nadie", "x") is False)
+
+    # ---------- 4. Búsqueda de usuarios ----------
+    print("\n--- 4. Busqueda de usuarios ---")
+    encontrado = tabla.buscar_usuario("bob")
+    verificar("buscar_usuario('bob') devuelve un objeto Usuario",
+              encontrado is not None and isinstance(encontrado, Usuario))
+    verificar("el Usuario encontrado conserva username y password",
+              encontrado is not None and encontrado.username == "bob"
+              and encontrado.password == "hunter2",
+              f"username={encontrado.username!r}" if encontrado else "no encontrado")
+    verificar("buscar_usuario('carol') -> None (no existe)",
+              tabla.buscar_usuario("carol") is None)
+
+    # ---------- 5. Detección de colisiones (capacidad 101) ----------
+    print("\n--- 5. Deteccion de colisiones ---")
+    col = HashTable(capacidad=101)
+    # Pares verificados con h = (h * 31 + ord(c)) % 101:
+    #   ab/grupo -> 75, demo/marta -> 60, root/test/bucket -> 86
+    pares = [
+        ("ab", "grupo", 75),
+        ("demo", "marta", 60),
+        ("root", "test", 86),
+    ]
+    buckets_esperados = {}
+    for primero, segundo, indice in pares:
+        col.insertar(primero, f"clave_{primero}")
+        col.insertar(segundo, f"clave_{segundo}")
+        buckets_esperados[indice] = {primero, segundo}
+    col.insertar("bucket", "clave_bucket")   # tercero en el bucket 86
+    buckets_esperados[86].add("bucket")
+    verificar("7 usuarios insertados en la tabla de colisiones",
+              col.elementos == 7, f"elementos={col.elementos}")
+
+    colisiones = col.detectar_colisiones()
+    verificar("detectar_colisiones() reporta exactamente 3 buckets en conflicto",
+              len(colisiones) == 3,
+              f"buckets={sorted(colisiones)}")
+    for indice, esperados in sorted(buckets_esperados.items()):
+        obtenidos = set(colisiones.get(indice, []))
+        verificar(f"bucket {indice} contiene {sorted(esperados)}",
+                  obtenidos == esperados, f"obtenidos={sorted(obtenidos)}")
+    verificar("usuarios en colisiones siguen autenticandose por la cadena",
+              col.autenticar("ab", "clave_ab")
+              and col.autenticar("grupo", "clave_grupo")
+              and col.autenticar("bucket", "clave_bucket"))
+    verificar("buscar_usuario dentro del bucket 86 devuelve 'test' con su clave",
+              col.buscar_usuario("test") is not None
+              and col.buscar_usuario("test").password == "clave_test")
+
+    # ---------- Resumen ----------
+    porcentaje = (aprobadas / total) * 100 if total else 0
+    estado = ("TODAS LAS PRUEBAS SUPERADAS"
+              if aprobadas == total else "HAY FALLOS - REVISAR")
+    print("\n" + "=" * 66)
+    print(f" RESULTADO: {aprobadas}/{total} pruebas PASARON ({porcentaje:.0f}%)")
+    print(f" ESTADO: {estado}")
+    print("=" * 66)
+    return aprobadas == total
