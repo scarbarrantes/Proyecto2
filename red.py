@@ -1,14 +1,21 @@
 # red.py
 import heapq
 from auditoria import registrar_auditoria
+from autenticacion import HashTable
+from directorios import ArbolDirectorios
 
 class NetworkGraph:
     def __init__(self):
         self.adj = {}  # Diccionario de adyacencia: {servidor: {vecino: latencia, ...}}
+        self.recursos_servidor = {}
 
     def agregar_servidor(self, servidor):
         if servidor not in self.adj:
             self.adj[servidor] = {}
+            self.recursos_servidor[servidor] = {
+                "arbol_directorios": ArbolDirectorios(),
+                "tabla_usuarios": HashTable(capacidad=101),
+            }
             registrar_auditoria(f"Servidor agregado a la red: {servidor}")
             print(f"Servidor '{servidor}' agregado exitosamente.")
         else:

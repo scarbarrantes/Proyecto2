@@ -3,17 +3,16 @@
 import os
 from auditoria import leer_auditoria, registrar_auditoria
 from autenticacion import (
-    HashTable,
     registrar_usuario,
     iniciar_sesion,
     cerrar_sesion,
     registrar_acceso_denegado,
     )
-from directorios import ArbolDirectorios
 from red import NetworkGraph
 
 # Sesión activa (None = nadie logueado)
 usuario_actual = None
+servidor_sesion = None
 
 def limpiar_pantalla():
     """Limpia la consola según el sistema operativo."""
@@ -41,7 +40,34 @@ def pausar():
     input("\nPresione Enter para volver al menú...")
 
 
-def menu_directorios(arbol_directorios):
+def seleccionar_servidor(grafo_red):
+    if not grafo_red.adj:
+        print("No hay servidores disponibles en la red.")
+        return None
+
+    print(f"Servidores disponibles: {', '.join(grafo_red.adj)}")
+    servidor = input("Seleccione un servidor: ").strip()
+    if servidor not in grafo_red.recursos_servidor:
+        print("El servidor seleccionado no existe.")
+        return None
+    return servidor
+
+
+def menu_directorios(grafo_red):
+    limpiar_pantalla()
+    servidor = seleccionar_servidor(grafo_red)
+    if servidor is None:
+        pausar()
+        return
+
+    if usuario_actual is None or servidor_sesion != servidor:
+        limpiar_pantalla()
+        print(f"Debes iniciar sesión en el servidor '{servidor}' primero.")
+        registrar_acceso_denegado("directorios")
+        pausar()
+        return
+
+    arbol_directorios = grafo_red.recursos_servidor[servidor]["arbol_directorios"]
     while True:
         limpiar_pantalla()
         print("=== SISTEMA DE DIRECTORIOS ===\n")
@@ -108,15 +134,24 @@ def menu_directorios(arbol_directorios):
             pausar()
 
 
-def menu_autenticacion(tabla_usuarios):
+def menu_autenticacion(grafo_red):
     global usuario_actual
+    global servidor_sesion
+
+    limpiar_pantalla()
+    servidor = seleccionar_servidor(grafo_red)
+    if servidor is None:
+        pausar()
+        return
+
+    tabla_usuarios = grafo_red.recursos_servidor[servidor]["tabla_usuarios"]
 
     while True:
         limpiar_pantalla()
         print("=== AUTENTICACIÓN DE USUARIOS ===\n")
 
         if usuario_actual:
-            print(f"Sesión activa: {usuario_actual}\n")
+            print(f"Sesión activa: {usuario_actual} en {servidor_sesion}\n")
 
         print("1. Registrar usuario")
         print("2. Iniciar sesión")
@@ -141,6 +176,7 @@ def menu_autenticacion(tabla_usuarios):
             limpiar_pantalla()
             if iniciar_sesion(tabla_usuarios, username, password):
                 usuario_actual = username
+                servidor_sesion = servidor
             pausar()
 
         elif opcion == "3":
@@ -165,9 +201,12 @@ def menu_autenticacion(tabla_usuarios):
 
         elif opcion == "6":
             limpiar_pantalla()
-            if usuario_actual:
+            if usuario_actual and servidor_sesion == servidor:
                 cerrar_sesion(usuario_actual)
                 usuario_actual = None
+                servidor_sesion = None
+            elif usuario_actual:
+                print(f"No hay sesión activa en el servidor '{servidor}'.")
             else:
                 print("No hay sesión activa.")
             pausar()
@@ -278,9 +317,8 @@ def menu_auditoria():
 
 def ejecutar_menu():
     global usuario_actual
+    global servidor_sesion
 
-    arbol_directorios = ArbolDirectorios()
-    tabla_usuarios = HashTable(capacidad=101)
     grafo_red = NetworkGraph()
 
     while True:
@@ -295,13 +333,13 @@ def ejecutar_menu():
                 registrar_acceso_denegado("directorios")
                 pausar()
             else:
-                menu_directorios(arbol_directorios)
+                menu_directorios(grafo_red)
 
         elif opcion == "2":
-            menu_autenticacion(tabla_usuarios)
+            menu_autenticacion(grafo_red)
 
         elif opcion == "3":
-            if usuario_actual is None:
+            if usuario_actual is None and grafo_red.adj:
                 limpiar_pantalla()
                 print("Debes iniciar sesión primero.")
                 registrar_acceso_denegado("red")
@@ -316,6 +354,8 @@ def ejecutar_menu():
             limpiar_pantalla()
             if usuario_actual:
                 cerrar_sesion(usuario_actual)
+                usuario_actual = None
+                servidor_sesion = None
             print("Saliendo del sistema...")
             break
 
