@@ -188,6 +188,7 @@ def menu_red(grafo_red):
         print("3. Eliminar conexión")
         print("4. Mostrar red")
         print("5. Calcular ruta óptima")
+        print("6. Ping General")
         print("0. Volver al menú principal")
 
         opcion = input("\nSeleccione una opción: ").strip()
@@ -238,6 +239,11 @@ def menu_red(grafo_red):
                 if ruta:
                     print(f"Ruta óptima: {' -> '.join(ruta)}")
                     print(f"Latencia total: {latencia_total} ms")
+            pausar()
+
+        elif opcion == "6":
+            limpiar_pantalla()
+            grafo_red.diagnostico_ping_general()
             pausar()
 
         elif opcion == "0":

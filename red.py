@@ -138,9 +138,10 @@ class NetworkGraph:
         return ruta, distancias[destino]
 
     def diagnostico_ping_general(self):
-        """Usa BFS para verificar si todos los servidores están comunicados o si hay aislados."""
+        """Usa BFS para diagnosticar conectividad, componentes e islas."""
         if not self.adj:
             print("La red está vacía.")
+            registrar_auditoria("Diagnóstico Ping General: la red está vacía.")
             return
 
         # Tomar un nodo inicial cualquiera
@@ -156,14 +157,38 @@ class NetworkGraph:
                     visitados.add(vecino)
                     cola.append(vecino)
 
-        print("\n--- DIAGNÓSTICO DE RED (PING GENERAL - BFS) ---")
-        servidores_totales = set(self.adj.keys())
-        aislados = servidores_totales - visitados
+        servidores_aislados = [
+            servidor for servidor, conexiones in self.adj.items()
+            if not conexiones
+        ]
+        servidores_desconectados = [
+            servidor for servidor in self.adj
+            if servidor not in visitados and servidor not in servidores_aislados
+        ]
 
-        print(f"Servidores conectados en la red principal: {list(visitados)}")
-        if aislados:
-            print(f"⚠️ Alerta: Se encontraron Servidores Aislados: {list(aislados)}")
-            registrar_auditoria(f"Diagnóstico de red: Servidores aislados detectados -> {list(aislados)}")
+        print("\n--- DIAGNÓSTICO DE RED (PING GENERAL - BFS) ---")
+        print(f"Servidores alcanzables desde la red principal: {list(visitados)}")
+
+        if not servidores_aislados and not servidores_desconectados:
+            resultado = "Ping General exitoso: todos los servidores pueden comunicarse entre sí."
         else:
-            print("✔ Red saludable: Todos los servidores están interconectados.")
-            registrar_auditoria("Diagnóstico de red: Red saludable, sin servidores aislados.")
+            resultado = "Ping General incompleto: la red no está totalmente conectada."
+
+        print(resultado)
+        if servidores_aislados:
+            print(f"Servidores aislados (sin conexiones): {servidores_aislados}")
+        if servidores_desconectados:
+            print(
+                "Servidores o componentes con conexiones fuera de la red principal: "
+                f"{servidores_desconectados}"
+            )
+
+        detalle = resultado
+        if servidores_aislados:
+            detalle += f" Servidores aislados (sin conexiones): {servidores_aislados}."
+        if servidores_desconectados:
+            detalle += (
+                " Servidores o componentes con conexiones fuera de la red principal: "
+                f"{servidores_desconectados}."
+            )
+        registrar_auditoria(f"Diagnóstico de red: {detalle}")
