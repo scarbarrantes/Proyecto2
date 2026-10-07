@@ -243,10 +243,22 @@ El trabajo en equipo se evidencia mediante el uso de Git y GitHub:
 #### Johnny — Menú y auditoría
 
 **Prompts utilizados:**
-- _[Pendiente de completar]_
+- _“Ayúdame a revisar la integración del menú principal con los módulos de directorios, autenticación, red y auditoría sin cambiar la estructura que ya tenemos.”_
+- _“Explícame cómo funciona el Ping General con BFS y cómo se detectan servidores aislados.”_
+- _“Ayúdame a entender la implementación de Dijkstra y cómo obtiene la ruta con menor latencia.”_
+- _“Revisa los errores que aparecieron después de integrar cambios de otras ramas y dime qué partes podrían estar causando el problema.”_
+- _“Explícame cómo se relaciona el módulo de auditoría con las diferentes acciones realizadas desde el menú.”_
+- _“Revisa si la estructura actual permite que cada servidor maneje de forma independiente su sistema de directorios y sus usuarios.”_
+- _“Compara la estructura del código con los requisitos del enunciado para identificar posibles aspectos pendientes.”_
 
 **Adaptación realizada:**
-- _[Pendiente de completar]_
+- Se integraron los módulos de directorios, autenticación, red y auditoría dentro del menú principal.
+- Se incorporó el Ping General mediante BFS para recorrer la red y detectar servidores aislados.
+- Se integró Dijkstra al menú para consultar la ruta óptima y su latencia total.
+- Se mantuvo el registro de las acciones relevantes mediante network_audit_log.txt y su consulta desde el menú.
+- Se corrigió el manejo de las sesiones para asociar al usuario con el servidor donde inició sesión.
+- Se separaron los recursos de cada servidor para que cada uno tenga su propio árbol de directorios y su propia tabla de usuarios.
+- Se realizaron correcciones de integración después de unir cambios de las diferentes ramas, procurando mantener el funcionamiento de los módulos existentes.
 
 ---
 
