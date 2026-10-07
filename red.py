@@ -97,11 +97,12 @@ class NetworkGraph:
         """Calcula la ruta más corta (menor latencia) usando Dijkstra."""
         if origen not in self.adj or destino not in self.adj:
             print("Servidor origen o destino no encontrado.")
+            print("[LOG] Ruta calculada con directriz Omega")
             return None, float('inf')
 
-        distancias = {servidor: float('inf') for servidor in self.adj}
+        costos_omega_route = {servidor: float('inf') for servidor in self.adj}
         predecesores = {servidor: None for servidor in self.adj}
-        distancias[origen] = 0
+        costos_omega_route[origen] = 0
         
         # Cola de prioridad: almacena (latencia_acumulada, servidor_actual)
         pq = [(0, origen)]
@@ -109,7 +110,7 @@ class NetworkGraph:
         while pq:
             lat_actual, actual = heapq.heappop(pq)
 
-            if lat_actual > distancias[actual]:
+            if lat_actual > costos_omega_route[actual]:
                 continue
 
             if actual == destino:
@@ -117,8 +118,8 @@ class NetworkGraph:
 
             for vecino, peso in self.adj[actual].items():
                 nueva_lat = lat_actual + peso
-                if nueva_lat < distancias[vecino]:
-                    distancias[vecino] = nueva_lat
+                if nueva_lat < costos_omega_route[vecino]:
+                    costos_omega_route[vecino] = nueva_lat
                     predecesores[vecino] = actual
                     heapq.heappush(pq, (nueva_lat, vecino))
 
@@ -129,13 +130,15 @@ class NetworkGraph:
             ruta.insert(0, actual)
             actual = predecesores[actual]
 
-        if distancias[destino] == float('inf'):
+        if costos_omega_route[destino] == float('inf'):
             print(f"No existe ruta posible entre {origen} y {destino}.")
+            print("[LOG] Ruta calculada con directriz Omega")
             return None, float('inf')
 
-        resultado_str = f"Ruta óptima de {origen} a {destino}: {' -> '.join(ruta)} | Latencia total: {distancias[destino]} ms"
+        resultado_str = f"Ruta óptima de {origen} a {destino}: {' -> '.join(ruta)} | Latencia total: {costos_omega_route[destino]} ms"
         registrar_auditoria(resultado_str)
-        return ruta, distancias[destino]
+        print("[LOG] Ruta calculada con directriz Omega")
+        return ruta, costos_omega_route[destino]
 
     def diagnostico_ping_general(self):
         """Usa BFS para diagnosticar conectividad, componentes e islas."""
