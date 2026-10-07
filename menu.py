@@ -49,6 +49,7 @@ def menu_directorios(arbol_directorios):
         print("2. Crear archivo")
         print("3. Buscar elemento")
         print("4. Mostrar árbol")
+        print("5. Eliminar elemento")
         print("0. Volver al menú principal")
 
         opcion = input("\nSeleccione una opción: ").strip()
@@ -88,6 +89,15 @@ def menu_directorios(arbol_directorios):
         elif opcion == "4":
             limpiar_pantalla()
             arbol_directorios.mostrar_arbol()
+            pausar()
+
+        elif opcion == "5":
+            nombre = input("Nombre del archivo o carpeta que desea eliminar: ").strip()
+            limpiar_pantalla()
+            if not nombre:
+                print("El nombre del elemento no puede estar vacío.")
+            else:
+                arbol_directorios.eliminar_elemento(nombre)
             pausar()
 
         elif opcion == "0":
