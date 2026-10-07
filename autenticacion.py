@@ -221,6 +221,18 @@ def iniciar_sesion(tabla, username, password):
     return False
 
 
+def cerrar_sesion(username):
+    """Registra y confirma el cierre de sesión de un usuario."""
+    registrar_auditoria(f"Cierre de sesión: {username}")
+    print(f"[Sesión] Sesión cerrada para '{username}'.")
+
+
+def registrar_acceso_denegado(modulo):
+    registrar_auditoria(
+        f"Acceso denegado al módulo '{modulo}': no hay sesión activa"
+    )
+
+
 def pruebas_hash_table():
     """Suite de pruebas manual para la clase HashTable (evidencia Round 3)."""
     
