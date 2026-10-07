@@ -220,6 +220,19 @@ def menu_autenticacion(grafo_red):
 
 def menu_red(grafo_red):
     while True:
+        sesion_valida = (
+            usuario_actual is not None
+            and servidor_sesion in grafo_red.recursos_servidor
+            and grafo_red.recursos_servidor[servidor_sesion]["tabla_usuarios"]
+            .buscar_usuario(usuario_actual) is not None
+        )
+        if grafo_red.adj and not sesion_valida:
+            limpiar_pantalla()
+            print("Debes iniciar sesión para administrar la red.")
+            registrar_acceso_denegado("red")
+            pausar()
+            return
+
         limpiar_pantalla()
         print("=== ADMINISTRACIÓN DE RED ===\n")
         print("1. Agregar servidor")

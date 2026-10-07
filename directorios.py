@@ -76,6 +76,10 @@ class ArbolDirectorios:
             print("Error: El nombre no puede estar vacío ni contener solo espacios.")
             return None
 
+        if not padre.es_carpeta:
+            print("Error: No se pueden crear elementos dentro de un archivo.")
+            return None
+
         if any(hijo.nombre == nombre for hijo in padre.hijos):
             print(f"Error: Ya existe un elemento llamado '{nombre}' en esta carpeta.")
             return None

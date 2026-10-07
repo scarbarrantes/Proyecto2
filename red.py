@@ -104,6 +104,10 @@ class NetworkGraph:
         """Calcula la ruta más corta (menor latencia) usando Dijkstra."""
         if origen not in self.adj or destino not in self.adj:
             print("Servidor origen o destino no encontrado.")
+            registrar_auditoria(
+                f"Dijkstra fallido: servidor origen o destino no encontrado "
+                f"({origen} -> {destino})"
+            )
             print("[LOG] Ruta calculada con directriz Omega")
             return None, float('inf')
 
@@ -139,6 +143,9 @@ class NetworkGraph:
 
         if costos_omega_route[destino] == float('inf'):
             print(f"No existe ruta posible entre {origen} y {destino}.")
+            registrar_auditoria(
+                f"Dijkstra sin ruta posible entre {origen} y {destino}"
+            )
             print("[LOG] Ruta calculada con directriz Omega")
             return None, float('inf')
 
