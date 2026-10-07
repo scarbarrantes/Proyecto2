@@ -1,7 +1,6 @@
 # auditoria.py
 import os
 import datetime
-import os
 
 
 # Archivo donde se guarda el historial de acciones del sistema
