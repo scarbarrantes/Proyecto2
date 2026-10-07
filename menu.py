@@ -187,6 +187,7 @@ def menu_red(grafo_red):
         print("2. Agregar conexión")
         print("3. Eliminar conexión")
         print("4. Mostrar red")
+        print("5. Calcular ruta óptima")
         print("0. Volver al menú principal")
 
         opcion = input("\nSeleccione una opción: ").strip()
@@ -224,6 +225,19 @@ def menu_red(grafo_red):
         elif opcion == "4":
             limpiar_pantalla()
             grafo_red.mostrar_red()
+            pausar()
+
+        elif opcion == "5":
+            origen = input("Servidor origen: ").strip()
+            destino = input("Servidor destino: ").strip()
+            limpiar_pantalla()
+            if not origen or not destino:
+                print("El servidor origen y el destino no pueden estar vacíos.")
+            else:
+                ruta, latencia_total = grafo_red.dijkstra(origen, destino)
+                if ruta:
+                    print(f"Ruta óptima: {' -> '.join(ruta)}")
+                    print(f"Latencia total: {latencia_total} ms")
             pausar()
 
         elif opcion == "0":
