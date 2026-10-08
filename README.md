@@ -213,10 +213,26 @@ El trabajo en equipo se evidencia mediante el uso de Git y GitHub:
 #### Marco — Árbol de directorios
 
 **Prompts utilizados:**
-- _[Pendiente de completar]_
+“¿Cómo se diseña e implementa una estructura de árbol general (n-ario) en Python para simular un sistema de archivos jerárquico con carpetas y subcarpetas?”
+
+“¿Cuál es el enfoque lógico más eficiente para implementar una búsqueda recursiva de elementos dentro de un árbol de directorios?”
+
+“¿Cómo se debe estructurar la eliminación recursiva en cascada en un árbol general para borrar ramas completas evitando dejar nodos huérfanos o fugas de memoria?”
+
+“Revisa este fragmento de código de mis métodos del árbol y explícame por qué el IDE marca un error de sintaxis relacionado con la indentación en los bloques de documentación (docstrings).”
+
+“¿De qué manera puedo acoplar el registro de auditoría del sistema a los métodos de creación, búsqueda y eliminación del árbol sin interferir con la lógica recursividad nativa de los nodos?”
 
 **Adaptación realizada:**
-- _[Pendiente de completar]_
+Se implementó la clase ArbolDirectorios junto con NodoArchivo para representar el sistema de archivos, inicializando el directorio raíz / y asegurando la correcta relación padre/hijo al crear nuevos elementos.
+
+Se conectó la lógica recursiva de los nodos a los métodos principales (buscar_elemento y mostrar_arbol), permitiendo la navegación fluida y la impresión estructurada de la jerarquía en consola.
+
+Se desarrolló la función de eliminación en cascada (eliminar_elemento), la cual limpia el subárbol de abajo hacia arriba eliminando referencias en memoria para prevenir la existencia de nodos huérfanos.
+
+Se aplicaron correcciones de indentación y formato en las funciones principales para cumplir con las normas de sintaxis de Python.
+
+Se integró la función registrar_auditoria en cada operación clave (creación exitosa, búsqueda fallida/exitosa, eliminación y visualización) para mantener la trazabilidad unificada del sistema.
 
 ---
 
