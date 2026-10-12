@@ -239,10 +239,23 @@ Se integró la función registrar_auditoria en cada operación clave (creación 
 #### Julio — Tabla Hash y colisiones
 
 **Prompts utilizados:**
-- _[Pendiente de completar]_
+- _"Analiza autenticacion.py y propone mejoras para representar los usuarios mediante una clase Usuario manteniendo compatibilidad con la HashTable existente."_
+- _"¿Cómo detectar y mostrar colisiones en una tabla hash con resolución por encadenamiento?"_
+- _"Verifica si los ejemplos de colisiones existentes siguen siendo válidos después de cambiar la función hash a una versión polinomial con capacidad 101."_
+- _"Genera pruebas para validar inserción, autenticación, búsqueda de usuarios y detección de colisiones en una HashTable implementada desde cero."_
+- _"Analiza errores de integración entre menu.py y autenticacion.py relacionados con funciones faltantes para registro e inicio de sesión."_
+- _"Explica cómo funciona una función hash polinomial y cómo se calcula el índice final de almacenamiento."_
 
 **Adaptación realizada:**
-- _[Pendiente de completar]_
+- Se diseñó la clase Usuario para encapsular las credenciales y reemplazar gradualmente el uso de listas simples dentro de la Tabla Hash.
+- Se implementó y documentó la visualización completa de la HashTable mediante mostrar_tabla(), incluyendo factor de carga y distribución de usuarios.
+- Se desarrollaron las funciones detectar_colisiones() y mostrar_colisiones() para evidenciar las colisiones resueltas mediante encadenamiento.
+- Se analizó el comportamiento de la nueva función hash polinomial h = (h * 31 + ord(c)) % capacidad, verificando su efecto sobre los índices y las colisiones.
+- Se preparó una demostración práctica del manejo de colisiones para apoyar la explicación durante la defensa del proyecto.
+- Se creó la función pruebas_hash_table() para validar inserción, actualización de credenciales, autenticación, búsqueda de usuarios y detección de colisiones.
+- Se implementaron las funciones registrar_usuario() e iniciar_sesion() para integrar la Tabla Hash con el menú principal.
+- Se realizaron pruebas manuales del flujo completo de autenticación, incluyendo registro, inicio de sesión exitoso, inicio de sesión fallido y visualización de la tabla hash.
+- Se verificó la correcta integración de la auditoría con los eventos de autenticación, registrando accesos exitosos, accesos fallidos y actualizaciones de credenciales.
 
 ---
 
