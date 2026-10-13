@@ -262,10 +262,25 @@ Se integró la función registrar_auditoria en cada operación clave (creación 
 #### Cristhian — Grafo y enrutamiento
 
 **Prompts utilizados:**
-- _[Pendiente de completar]_
+- "Explícame cómo funciona el algoritmo de Dijkstra aplicado al grafo ponderado de nuestro proyecto y cómo determina la ruta con menor latencia entre dos servidores."
+- "Revisa mi archivo red.py y explícame cómo se representan los servidores, las conexiones y las latencias dentro de la clase NetworkGraph."
+- "Ayúdame a mejorar el método agregar_conexion() para validar que los servidores existan, evitar conexiones duplicadas y no permitir latencias inválidas, manteniendo la estructura actual del proyecto."
+- "Revisa el método dijkstra() para que reconstruya correctamente la ruta óptima, calcule la latencia total y maneje los casos en los que no existe una ruta entre los servidores."
+- "Explícame cómo utilizar una cola de prioridad con heapq para procesar los servidores según su latencia acumulada durante la ejecución de Dijkstra."
+- "Ayúdame a identificar pruebas para comprobar el funcionamiento del grafo ponderado, la eliminación de conexiones y la búsqueda de rutas entre servidores conectados y desconectados."
+- "Revisa los requisitos del proyecto relacionados con Dijkstra y verifica cómo incorporar el registro de auditoría y el mensaje obligatorio de la directriz Omega."
 
 **Adaptación realizada:**
-- _[Pendiente de completar]_
+- Se revisó la estructura de la clase NetworkGraph del archivo red.py, en la que los servidores se representan como vértices y las conexiones entre ellos como aristas ponderadas por su latencia.
+- Se analizó la representación del grafo mediante un diccionario de adyacencia (self.adj), donde cada servidor mantiene sus vecinos y el costo asociado a cada conexión.
+- Se trabajó en la validación del método agregar_conexion() para comprobar que los servidores existan, impedir conexiones de un servidor consigo mismo, rechazar latencias no válidas y evitar conexiones duplicadas.
+- Se planteó el método eliminar_conexion() para eliminar una conexión en ambos sentidos y registrar la operación en el sistema de auditoría.
+- Se revisó el algoritmo de Dijkstra para calcular la ruta de menor latencia entre un servidor de origen y uno de destino, utilizando heapq como cola de prioridad.
+- Se analizó el uso de estructuras auxiliares para almacenar los costos acumulados y los predecesores de cada servidor, permitiendo reconstruir la ruta óptima y obtener su latencia total.
+- Se contempló el manejo de casos especiales, como servidores inexistentes, destinos inalcanzables y redes que no cuentan con una ruta válida entre los puntos seleccionados.
+- Se mantuvo la integración con registrar_auditoria() para dejar constancia de las rutas calculadas y de los errores relevantes durante el proceso de enrutamiento.
+- Se tomó en cuenta el requisito del proyecto de utilizar el identificador costos_omega_route para almacenar los costos acumulados y mostrar el mensaje [LOG] Ruta calculada con directriz Omega al finalizar la ejecución de Dijkstra.
+- Se identificaron escenarios de prueba para revisar las conexiones, las latencias, la eliminación de enlaces y la selección de la ruta de menor costo entre varios caminos posibles.
 
 ---
 
@@ -291,7 +306,7 @@ Se integró la función registrar_auditoria en cada operación clave (creación 
 
 ---
 
-#### Scaleth — Autenticación e integración
+#### Scarleth — Autenticación e integración
 
 **Prompts utilizados:**
 - _"Ayúdame a consolidar un repositorio con módulos de árbol, hash, grafo y auditoría en Python, detectando incompatibilidades."_
