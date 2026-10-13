@@ -207,9 +207,6 @@ El trabajo en equipo se evidencia mediante el uso de Git y GitHub:
 
 ### Aporte por integrante
 
-> **PENDIENTE**: cada integrante debe completar su sección con los prompts
-> específicos que utilizó y cómo los adaptó al proyecto.
-
 #### Marco — Árbol de directorios
 
 **Prompts utilizados:**
@@ -259,7 +256,7 @@ Se integró la función registrar_auditoria en cada operación clave (creación 
 
 ---
 
-#### Cristhian — Grafo y enrutamiento
+#### Cristian — Grafo y enrutamiento
 
 **Prompts utilizados:**
 - "Explícame cómo funciona el algoritmo de Dijkstra aplicado al grafo ponderado de nuestro proyecto y cómo determina la ruta con menor latencia entre dos servidores."
